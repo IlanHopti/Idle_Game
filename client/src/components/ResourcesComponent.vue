@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import {useUserStore} from "@/stores/user";
-import CoalResource from '@/assets/resources/coal.png';
-import IronResource from '@/assets/resources/iron_ingot.png';
-import WoodResource from '@/assets/resources/wood.png';
-import StoneResource from '@/assets/resources/stone.png';
-import CoinResource from '@/assets/resources/coin.png';
-import DiamondResource from '@/assets/resources/diamond.png';
-import GoldResource from '@/assets/resources/gold_ingot.png';
+import CoalResource from '../../public/resources/coal.png';
+import IronResource from '../../public/resources/iron_ingot.png';
+import WoodResource from '../../public/resources/wood.png';
+import StoneResource from '../../public/resources/stone.png';
+import CoinResource from '../../public/resources/coin.jpeg';
+import DiamondResource from '../../public/resources/diamond.png';
+import GoldResource from '../../public/resources/gold_ingot.png';
 
 
 const userConnected = useUserStore()
 
 const resources = userConnected.user.ressources
+resources.coin = userConnected.user.money
 
 function image(key: string) {
     switch (key) {

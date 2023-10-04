@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import FactoryColumn from '../components/factoriesColumn.vue'
+
 </script>
 
 <template>

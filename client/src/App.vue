@@ -26,6 +26,13 @@
 
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { useUserStore } from '@/stores/user'
+
+const userConnected = useUserStore()
+if (userConnected.user.length === 0) {
+  console.log('fetching user')
+  userConnected.fetchUser()
+}
 </script>
 
 <style scoped>

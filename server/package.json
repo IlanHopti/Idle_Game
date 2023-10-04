@@ -8,7 +8,8 @@
     "dev:win": "tsc-watch --noClear -p \"./tsconfig.json\" --onSuccess \"npm run dev:winnext\"",
     "dev:winnext": "tsc-alias -p tsconfig.json && node dist/index.js",
     "build": "tsc && tsc-alias -p tsconfig.json",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --ext .ts --fix"
   },
   "keywords": [],
   "author": "",
@@ -27,12 +28,21 @@
     "@types/cors": "^2.8.14",
     "@types/express": "^4.17.18",
     "@types/jest": "^29.5.4",
+    "@types/jsonwebtoken": "^9.0.3",
     "@types/node": "^20.8.2",
+    "@typescript-eslint/eslint-plugin": "^6.7.4",
+    "eslint": "^8.50.0",
+    "eslint-config-standard-with-typescript": "^39.1.0",
+    "eslint-plugin-import": "^2.28.1",
+    "eslint-plugin-n": "^16.1.0",
+    "eslint-plugin-promise": "^6.1.1",
     "jest": "^29.6.4",
+    "jsonwebtoken": "^9.0.2",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
     "tsc-alias": "^1.8.8",
     "tsc-watch": "^6.0.4",
-    "tsconfig-paths-jest": "^0.0.1"
+    "tsconfig-paths-jest": "^0.0.1",
+    "typescript": "^5.2.2"
   }
 }

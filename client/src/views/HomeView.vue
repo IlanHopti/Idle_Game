@@ -1,36 +1,73 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import FactoryItem from '../components/factoryItem.vue'
-import FactoryItemSkeleton from '../components/factoryItemSkeleton.vue'
+import FactoryColumn from '../components/factoriesColumn.vue'
 </script>
 
 <template>
   <main>
-    <div class="flex flex-row justify-evenly">
-      <div class="flex flex-col">
-        <FactoryItem
-          modal-id="woodFactory"
-          :factory-name="`Wood Factory`"
-          :factory-level="1"
-          borderColor="border-wood"
-          factory-img="https://cdn.discordapp.com/attachments/1158396116388302910/1159054969782145125/woodFactory-removebg-preview.png?ex=651e7d8e&is=651d2c0e&hm=a3ebf200d8e79c9c0d9021198985d43935d9296a873e9502b84469854dab9a58&"
-        />
-        <FactoryItemSkeleton :factory-name="`Wood Factory`" />
-        <FactoryItemSkeleton :factory-name="`Wood Factory`" />
-        <FactoryItemSkeleton :factory-name="`Wood Factory`" />
-      </div>
-      <div class="flex flex-col">
-        <FactoryItem
-          modal-id="stoneFactory"
-          :factory-name="`Stone Factory`"
-          :factory-level="1"
-          borderColor="border-stone"
-          factory-img="https://cdn.discordapp.com/attachments/1158396116388302910/1159054818787209258/48d073e4-982c-48c2-80b4-d28b2557abbe.jpeg?ex=651e7d6a&is=651d2bea&hm=5a0d995976351f7dacbb94e9b05ee12ac85d5a50caff787068a66dca525c88b8&"
-        />
-        <FactoryItemSkeleton :factory-name="`Stone Factory`" />
-        <FactoryItemSkeleton :factory-name="`Stone Factory`" />
-        <FactoryItemSkeleton :factory-name="`Stone Factory`" />
-      </div>
+    <div class="grid grid-cols-3 gap-3 p-10">
+      <!-- Wood -->
+      <FactoryColumn
+        factoryName="Wood Factory"
+        modalId="woodFactory"
+        :factoryLevel="1"
+        borderColor="border-wood"
+        factoryImg="../../public/factories/wood_factory.png"
+        factoryProductionImg="../../public/resources/wood.png"
+      />
+
+      <!-- Coal -->
+      <FactoryColumn
+        factoryName="Coal Factory"
+        modalId="coalFactory"
+        :factoryLevel="1"
+        borderColor="border-coal"
+        factoryImg="../../public/factories/coal_factory.jpeg"
+        factoryProductionImg="../../public/resources/coal.png"
+      />
+
+      <!-- Stone -->
+      <FactoryColumn
+        factoryName="Stone Factory"
+        modalId="stoneFactory"
+        :factoryLevel="1"
+        borderColor="border-stone"
+        factoryImg="../../public/factories/stone_factory.jpeg"
+        factoryProductionImg="../../public/resources/stone.png"
+      />
+
+      <div class="w-full border-t-2 border-dashed border-black"></div>
+      <div class="w-full border-t-2 border-dashed border-black"></div>
+      <div class="w-full border-t-2 border-dashed border-black"></div>
+
+      <!-- Iron -->
+      <FactoryColumn
+        factoryName="Iron Factory"
+        modalId="ironFactory"
+        :factoryLevel="1"
+        borderColor="border-iron"
+        factoryImg="../../public/factories/iron_factory.png"
+        factoryProductionImg="../../public/resources/iron_ingot.png"
+      />
+
+      <!-- Gold -->
+      <FactoryColumn
+        factoryName="Gold Factory"
+        modalId="goldFactory"
+        :factoryLevel="1"
+        borderColor="border-gold"
+        factoryImg="../../public/factories/gold_factory.png"
+        factoryProductionImg="../../public/resources/gold_ingot.png"
+      />
+
+      <!-- Diamond -->
+      <FactoryColumn
+        factoryName="Diamond Factory"
+        modalId="diamondFactory"
+        :factoryLevel="1"
+        borderColor="border-diamond"
+        factoryImg="../../public/factories/diamond_factory.jpeg"
+        factoryProductionImg="../../public/resources/diamond.png"
+      />
     </div>
   </main>
 </template>

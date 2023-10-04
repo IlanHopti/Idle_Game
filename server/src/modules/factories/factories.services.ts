@@ -14,7 +14,7 @@ export async function getFactories() {
 
 export async function getFactoriesByUser(user:string) {
     try {
-        const factory = await Factory.findOne({ user_id: new ObjectId(user) });
+        const factory = await Factory.find({ user_id: new ObjectId(user) }).toArray();
         return factory;
     } catch (error) {
         console.error(error);

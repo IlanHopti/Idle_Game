@@ -1,16 +1,36 @@
+import { type ObjectId } from 'mongodb'
+
 export interface AuthRegisterBody {
-    username: string
-    password: string
+  email: string
+  username: string
+  password: string
+  confirm_password: string
+}
+
+export interface AuthLoginBody {
+  emailOrUsername: string
+  password: string
 }
 
 export interface User {
-    username: string
-    password: string
-    token: string
-    createdAt: Date
+  email: string
+  username: string
+  password: string
+  ressources: {
+    wood: number
+    coal: number
+    stone: number
+    iron: number
+    gold: number
+    diamond: number
+  }
+  money: number
+  createdAt: Date
+  last_action: Date
+  completed_success: ObjectId[]
 }
 
 export interface SimpleUser {
-    username: string
-    createdAt: Date
+  username: string
+  createdAt: Date
 }

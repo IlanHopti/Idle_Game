@@ -1,11 +1,11 @@
-import { ObjectId } from "mongodb"
+import { type ObjectId } from 'mongodb'
 
 export interface AuthRegisterBody {
-    email: string
-    username: string
-    password: string
-    confirm_password: string
-  }
+  email: string
+  username: string
+  password: string
+  confirm_password: string
+}
 
 export interface User {
     _id?: ObjectId
@@ -27,9 +27,16 @@ export interface User {
     completed_success: ObjectId[]
   }
 
+
+export interface AuthLoginBody {
+  emailOrUsername: string
+  password: string
+}
+
+
 export interface SimpleUser {
-    username: string
-    createdAt: Date
+  username: string
+  createdAt: Date
 }
 
 export interface UserRessources {

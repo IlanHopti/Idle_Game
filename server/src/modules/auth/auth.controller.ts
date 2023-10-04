@@ -25,8 +25,12 @@ export function registerAuthRoutes (app: Express): void {
 
     res.json(result)
   })
-
   app.get('/auth/me', requireLogin, (req, res): void => {
     res.json(req.user)
+  })
+  app.get('/auth/logout', (req, res): void => {
+    console.log(req)
+    res.clearCookie('token')
+    res.json({ message: 'Vous êtes bien déconnecté' })
   })
 }

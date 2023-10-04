@@ -23,10 +23,10 @@ const myUnits = ref( { wood: 0, coal: 0, coin: 0, stone: 0, iron: 0, gold: 0, di
 
 const userConnected = useUserStore()
 userConnected.fetchUser().then(() => {
-  myUnits.value = userConnected.user.ressources
+  myUnits.value = userConnected.user.resources
   myUnits.value.coin = userConnected.user.money
 });
-// myUnits.value = userConnected.user.ressources
+// myUnits.value = userConnected.user.resources
 const canUpgrade = ref(false)
 
 watchEffect(() => {

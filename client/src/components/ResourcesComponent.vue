@@ -22,6 +22,10 @@ onMounted(() => {
         resources.value.coin = newValue;
     });
 
+    setInterval(() => {
+        userConnected.redeemResources()
+    }, 3000);
+
     onErrorCaptured(() => {
         unwatchResources();
         unwatchMoney();

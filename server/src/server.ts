@@ -31,7 +31,6 @@ export function initWebServer (): express.Express {
   userRoutes(app)
   factoriesRoutes(app)
 
-
   // On ecoute sur le port configuré avec le .env
   app.listen(process.env.NODE_PORT, () => {
     console.log(`Listening on http://localhost:${process.env.NODE_PORT}`)

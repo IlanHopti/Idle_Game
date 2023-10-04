@@ -22,8 +22,8 @@ export const useUserStore = defineStore('user', {
       try {
         const response = await axios.get('http://localhost:3001/auth/me', { withCredentials: true });
         this.user = response.data.user;
-        this.resources = this.user.ressources;
-        this.money = this.user.money;
+        this.resources = this.user.resources;
+        this.user.resources.coin = this.user.money
         this.isLogged = true;
       } catch (error) {
         console.log(error);
@@ -69,5 +69,16 @@ export const useUserStore = defineStore('user', {
         console.log(error)
       });
     },
+    async redeemResources() {
+      try {
+        await axios.post('http://localhost:3001/user/redeem/resources', {}, { withCredentials: true });
+        await this.fetchUser()
+        this.user.resources.coin = this.user.money
+      } catch (error) {
+        // console.log(error);
+        // this.isLogged = false;
+        // throw error;
+      }
+    }
   }
 })

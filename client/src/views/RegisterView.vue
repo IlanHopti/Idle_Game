@@ -50,6 +50,7 @@
 import { ref } from 'vue'
 import axios from 'axios'
 import router from "@/router";
+import {useUserStore} from "@/stores/user";
 
 const username = ref('')
 const email = ref('')
@@ -57,17 +58,25 @@ const password = ref('')
 const confirm_password = ref('')
 const errorMessage = ref('')
 
-const registerUser = () => {
-    axios.post('http://localhost:3001/auth/register', {
-            username: username.value,
-            email: email.value,
-            password: password.value,
-            confirm_password: confirm_password.value
-        },
-        {
-            withCredentials: true // Add this option
-        }).then((res) => {
-        res.data.success ? router.push('/') : errorMessage.value = res.data.message
-    })
+const registeredUser = useUserStore()
+registeredUser.fetchUser().then(() => {
+    if (registeredUser.user) {
+        router.push('/');
+    }
+}).catch((err) => {
+    console.log(err)
+})
+const registerUser = async () => {
+    try {
+        // Assuming connectUser.login returns a promise
+        const result = await registeredUser.register(email.value, username.value, password.value, confirm_password.value);
+        if (result.success) {
+            await router.push('/');
+        } else {
+            errorMessage.value = result.message;
+        }
+    } catch (error) {
+        errorMessage.value = 'An unexpected error occurred.';
+    }
 }
 </script>

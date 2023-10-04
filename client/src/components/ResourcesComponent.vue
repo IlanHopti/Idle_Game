@@ -7,12 +7,27 @@ import StoneResource from '../../public/resources/stone.png';
 import CoinResource from '../../public/resources/coin.jpeg';
 import DiamondResource from '../../public/resources/diamond.png';
 import GoldResource from '../../public/resources/gold_ingot.png';
+import {onErrorCaptured, onMounted, ref, watch} from "vue";
 
 
 const userConnected = useUserStore()
+const resources = ref({});
 
-const resources = userConnected.user.ressources
-resources.coin = userConnected.user.money
+onMounted(() => {
+    const unwatchResources = watch(() => userConnected.resources, (newValue) => {
+        resources.value = newValue;
+    });
+
+    const unwatchMoney = watch(() => userConnected.money, (newValue) => {
+        resources.value.coin = newValue;
+    });
+
+    onErrorCaptured(() => {
+        unwatchResources();
+        unwatchMoney();
+    });
+});
+
 
 function image(key: string) {
     switch (key) {

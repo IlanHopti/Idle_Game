@@ -5,19 +5,25 @@ import router from "@/router";
 import {ref} from "vue";
 interface UserState {
   user: UserInterface[],
-  isLogged: boolean
+  isLogged: boolean,
+  resources: any[],
+  money: number,
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: [],
-    isLogged: false
+    isLogged: false,
+    resources: [],
+    money: 0,
   }),
   actions: {
     async fetchUser() {
       try {
         const response = await axios.get('http://localhost:3001/auth/me', { withCredentials: true });
         this.user = response.data.user;
+        this.resources = this.user.ressources;
+        this.money = this.user.money;
         this.isLogged = true;
       } catch (error) {
         console.log(error);

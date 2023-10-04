@@ -11,6 +11,7 @@ const props = defineProps<{
   factoryProduction: number
   factoryProductionImg: string
   unitsNeededForUpgrade: { wood: number; coin: number }
+  borderColor: string
 }>()
 
 console.log(props.factoryName)
@@ -59,8 +60,12 @@ watchEffect(() => {
 
         <!-- Description Factory -->
         <div class="flex flex-row items-center justify-evenly">
-          <div class="border-2 border-solid border-wood rounded-lg text-center mr-6 w-fit">
-            <img class="w-32 h-auto" :src="factoryImg" />
+          <div class="mr-6 w-fit">
+            <img
+              class="w-32 h-auto border-2 border-solid rounded-lg text-center"
+              :class="borderColor"
+              :src="factoryImg"
+            />
           </div>
           <div class="flex flex-col items-center justify-between h-32">
             <h1 class="text-2xl font-bold">{{ factoryName }}</h1>

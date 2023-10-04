@@ -50,7 +50,7 @@ export async function upgradeFactory(factory_id: string, user: User) {
     if (user._id != factory.user_id) {
         return { message: "This isnt your factory" };
     }
-    const userResources = user.ressources;
+    const userResources = user.resources;
     if (!userResources) {
         return { message: userResources }
     }

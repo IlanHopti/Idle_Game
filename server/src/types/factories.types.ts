@@ -1,9 +1,10 @@
-import { Double, ObjectId } from "mongodb";
+import { ObjectId } from "mongodb";
 
 export interface Factories{
+    _id?: ObjectId;
     user_id:ObjectId,
-    level:Double,
-    cost:Double,
-    production:Double,
+    level:number,
+    cost:number,
+    production:number,
     type:string,
 }

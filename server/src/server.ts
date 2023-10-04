@@ -2,6 +2,7 @@ import express from 'express'
 import cors from 'cors'
 import { registerAuthRoutes } from './modules/auth/auth.controller'
 import { isLogin } from './modules/auth/auth.middleware'
+import { factoriesRoutes } from './modules/factories/factories.controller'
 
 export function initWebServer() {
     // Creation du serveur http
@@ -18,6 +19,7 @@ export function initWebServer() {
 
     // On enregistre nos controllers
     registerAuthRoutes(app)
+    factoriesRoutes(app)
     
     // On ecoute sur le port configuré avec le .env
     app.listen(process.env.NODE_PORT, () => {

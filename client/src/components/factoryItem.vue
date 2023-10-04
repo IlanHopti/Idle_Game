@@ -7,7 +7,7 @@ const factoryProduction = ref(5)
 const factoryProductionImg = ref(
   'https://cdn.discordapp.com/attachments/1158396116388302910/1159052969879273533/wood-removebg-preview.png?ex=651e7bb2&is=651d2a32&hm=d3475f03b3673184d9e4ba24356e4f639ce988c706ccb3f7b10390f221627fee&'
 )
-const unitsNeededForUpgrade = ref({ wood: 10, coin: 20 })
+const unitsNeededForUpgrade = ref({ wood: 10, coin: 20, iron: 3000, coal: 2000, gold:4000, diamond: 1, stone: 300 })
 
 const props = defineProps<{
   factoryName: string

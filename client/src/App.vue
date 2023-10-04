@@ -16,6 +16,9 @@
                         <button @click="logout" class="text-white hover:text-blue-200">Logout</button>
                     </template>
                 </div>
+                <div v-if="isLogged">
+                    <ResourcesComponent></ResourcesComponent>
+                </div>
             </nav>
         </div>
     </header>
@@ -25,6 +28,7 @@
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
 import { ref, onMounted, onErrorCaptured, watch } from 'vue'
+import ResourcesComponent from "@/components/ResourcesComponent.vue";
 
 const userConnected = useUserStore()
 const isLogged = ref(userConnected.isLogged)

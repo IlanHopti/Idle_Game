@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { ref, watchEffect } from 'vue'
+import {useUserStore} from "@/stores/user";
+import router from "@/router";
 
 // props declaration
 const props = defineProps<{
@@ -10,13 +12,19 @@ const props = defineProps<{
   factoryLevelMax: number
   factoryProduction: number
   factoryProductionImg: string
-  unitsNeededForUpgrade: { wood: number; coin: number }
+  unitsNeededForUpgrade: { wood: number, coal: number, coin: number, stone: number, iron: number, gold: number, diamond: number }
 }>()
 
 console.log(props.factoryName)
 
-const myUnits = ref({ wood: 0, coin: 20 })
+const myUnits = ref( { wood: 0, coal: 0, coin: 0, stone: 0, iron: 0, gold: 0, diamond: 0 })
 
+const userConnected = useUserStore()
+userConnected.fetchUser().then(() => {
+  myUnits.value = userConnected.user.ressources
+  myUnits.value.coin = userConnected.user.money
+});
+// myUnits.value = userConnected.user.ressources
 const canUpgrade = ref(false)
 
 watchEffect(() => {

@@ -14,7 +14,7 @@ const props = defineProps<{
   borderColor: string
 }>()
 
-console.log(props.factoryName)
+// console.log(props.factoryName)
 
 const myUnits = ref({ wood: 0, coin: 20 })
 

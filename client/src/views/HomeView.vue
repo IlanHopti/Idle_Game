@@ -13,6 +13,7 @@ import FactoryColumn from '../components/factoriesColumn.vue'
         borderColor="border-wood"
         factoryImg="../../public/factories/wood_factory.png"
         factoryProductionImg="../../public/resources/wood.png"
+        factory-type="Wood"
       />
 
       <!-- Coal -->
@@ -23,6 +24,7 @@ import FactoryColumn from '../components/factoriesColumn.vue'
         borderColor="border-coal"
         factoryImg="../../public/factories/coal_factory.jpeg"
         factoryProductionImg="../../public/resources/coal.png"
+        factory-type="Coal"
       />
 
       <!-- Stone -->
@@ -33,6 +35,7 @@ import FactoryColumn from '../components/factoriesColumn.vue'
         borderColor="border-stone"
         factoryImg="../../public/factories/stone_factory.jpeg"
         factoryProductionImg="../../public/resources/stone.png"
+        factory-type="Stone"
       />
 
       <div class="w-full border-t-2 border-dashed border-black"></div>
@@ -47,6 +50,7 @@ import FactoryColumn from '../components/factoriesColumn.vue'
         borderColor="border-iron"
         factoryImg="../../public/factories/iron_factory.png"
         factoryProductionImg="../../public/resources/iron_ingot.png"
+        factory-type="Iron"
       />
 
       <!-- Gold -->
@@ -57,6 +61,7 @@ import FactoryColumn from '../components/factoriesColumn.vue'
         borderColor="border-gold"
         factoryImg="../../public/factories/gold_factory.png"
         factoryProductionImg="../../public/resources/gold_ingot.png"
+        factory-type="Gold"
       />
 
       <!-- Diamond -->
@@ -67,6 +72,7 @@ import FactoryColumn from '../components/factoriesColumn.vue'
         borderColor="border-diamond"
         factoryImg="../../public/factories/diamond_factory.jpeg"
         factoryProductionImg="../../public/resources/diamond.png"
+        factory-type="Diamond"
       />
     </div>
   </main>

@@ -1,4 +1,5 @@
 export interface FactoriesInterface {
+  _id: string
   user_id: string
   level: number
   cost: number

@@ -1,5 +1,10 @@
 import { Express, Request, Response } from "express";
-import { createFactory, getFactories, getFactoriesByUser, upgradeFactory } from "./factories.services";
+import {
+    createFactory,
+    getFactories,
+    getFactoriesByUser,
+    upgradeFactory
+} from './factories.services'
 
 export function factoriesRoutes(app: Express) {
     app.get('/factories', async (_req: Request , res: Response) => {

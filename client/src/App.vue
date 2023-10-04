@@ -1,5 +1,5 @@
 <template>
-    <header class="bg-black py-4">
+  <!-- <header class="bg-black py-4">
         <div class="container mx-auto">
             <nav class="flex items-center justify-between">
                 <div class="text-white text-2xl font-bold">Mon Application</div>
@@ -18,40 +18,45 @@
                 </div>
             </nav>
         </div>
-    </header>
-    <router-view />
+    </header> -->
+  <Navbar />
+  <router-view />
 </template>
 
 <script setup lang="ts">
 import { useUserStore } from '@/stores/user'
 import { ref, onMounted, onErrorCaptured, watch } from 'vue'
+import Navbar from '@/components/navbar.vue'
 
 const userConnected = useUserStore()
 const isLogged = ref(userConnected.isLogged)
 
 // Watch for changes in userConnected.isLogged and update isLogged.value
 onMounted(() => {
-  const unwatchIsLogged = watch(() => userConnected.isLogged, (newValue) => {
-    isLogged.value = newValue;
-  });
+  const unwatchIsLogged = watch(
+    () => userConnected.isLogged,
+    (newValue) => {
+      isLogged.value = newValue
+    }
+  )
 
   // Clean up the watcher when the component is unmounted
   onErrorCaptured(() => {
-    unwatchIsLogged();
-  });
-});
+    unwatchIsLogged()
+  })
+})
 
 // Fetch user data when the component is mounted
 onMounted(async () => {
   try {
-    await userConnected.fetchUser();
+    await userConnected.fetchUser()
   } catch (err) {
-    console.error(err);
+    console.error(err)
   }
-});
+})
 
 const logout = () => {
-  userConnected.logout();
+  userConnected.logout()
 }
 </script>
 

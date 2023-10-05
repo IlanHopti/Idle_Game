@@ -4,6 +4,7 @@ import { ObjectId } from 'mongodb'
 import { type User } from '@/types/auth.types'
 import { Users } from '@/db/models/User'
 import { FactoryRessources } from '@/db/models/FactoriesRessources'
+import { checkSuccess } from '@/modules/success/success.services'
 
 export async function getFactories (): Promise<Factories[] | unknown> {
   const factories = await Factory?.find().toArray()
@@ -30,6 +31,15 @@ export async function createFactory (user: string, type: string): Promise<unknow
     user_id: new ObjectId(user)
   })
 
+  const factories = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
+
+  if (!factories) {
+    return { message: 'No factories found' }
+  } else {
+    [1, 5, 10].forEach(async (quantity) => {
+      await checkSuccess(user, `${quantity}_factories`)
+    })
+  }
   return { message: 'Creation Successful' }
 }
 
@@ -77,6 +87,28 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     type: factory.type
   }
   if (factory._id) {
+    [1, 5, 10].forEach(async (level) => {
+      if (factory.level === level) {
+        await checkSuccess(user, `factory_${level}`)
+      }
+    })
+
+    // Get all the factories different of level 1 and 0
+    const factoriesUpgraded = await Factory.find({ level: { $gt: 1 } }).toArray()
+    let countedLevelUps = 0
+    // Count the number of factories upgraded and the number from 1
+    factoriesUpgraded.forEach(async (factoryUpgraded) => {
+      while (factoryUpgraded.level > 1) {
+        countedLevelUps++
+        factoryUpgraded.level--
+      }
+
+      [1, 5, 10].forEach(async (level) => {
+        if (countedLevelUps === level) {
+          await checkSuccess(user, `upgrade_${level}_factories`)
+        }
+      })
+    })
     await Factory?.updateOne({ _id: new ObjectId(factory._id) }, { $set: newFactory })
     await Users?.updateOne({ _id: new ObjectId(user._id) }, {
       $set: {

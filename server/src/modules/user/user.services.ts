@@ -1,6 +1,7 @@
 import jwt from 'jsonwebtoken'
 import { Users } from '@/db/models/User'
 import { Factory } from '@/db/models/Factories'
+import { checkSuccess } from '@/modules/success/success.services'
 
 export async function getUser (token: string) {
   try {
@@ -67,13 +68,13 @@ export async function redeemResources (user: any): Promise<void> {
           last_action: new Date()
         }
       })
+
+      await checkSuccess(user, 'click_resource')
     }
   }
 }
 
 export async function redeemOfflineResources (user: any): Promise<void> {
-  console.log('redeemOfflineResources')
-
   const resourcesToGive: Record<string, number> = {
     stone: 0,
     iron: 0,
@@ -89,10 +90,7 @@ export async function redeemOfflineResources (user: any): Promise<void> {
   // Convert it to seconds
   const timeOfflineInSeconds = timeOffline / 1000
 
-  console.log(timeOfflineInSeconds)
-
   if (timeOfflineInSeconds < 3) {
-    console.log('Not enough time offline')
     return
   }
   const timeOfflineConverted = timeOfflineInSeconds / 3

@@ -15,7 +15,7 @@ const props = defineProps<{
   factoryProductionImg: string
 }>()
 
-// console.log('modalId item: ' + props.modalId)
+console.log('modalId item: ' + props.modalId)
 </script>
 
 <template>

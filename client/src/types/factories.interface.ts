@@ -5,5 +5,16 @@ export interface FactoriesInterface {
   cost: number
   production: number
   type: string
-  aaaa: string
+}
+
+export interface FactoryModalInterface {
+  id: string
+  user_id: string
+  level: number
+  cost: number
+  production: number
+  type: string
+  factoryName: string
+  factoryProduction: number
+  factoryProductionImg: string
 }

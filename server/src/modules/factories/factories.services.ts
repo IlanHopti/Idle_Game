@@ -81,7 +81,7 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     await Users?.updateOne({ _id: new ObjectId(user._id) }, {
       $set: {
         money: user.money - factory.cost,
-        ressources: userResources
+        resources: userResources
       }
     })
     return { message: 'You have upgraded successfully' }

@@ -36,13 +36,3 @@ export interface SimpleUser {
   username: string
   createdAt: Date
 }
-
-export interface UserRessources {
-  wood: number
-  coal: number
-  stone: number
-  iron: number
-  gold: number
-  diamond: number
-  [key: string]: number // Ajouter cette signature d'index
-}

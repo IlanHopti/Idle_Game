@@ -31,10 +31,9 @@ onMounted(async () => {
 
   interval = setInterval(async () => {
     try {
-      console.log('Redeeming resources...')
       await userConnected.redeemResources()
     } catch (err) {
-      console.log('Error getting offline resources:')
+      console.log('Error redeeming resources:')
     }
   }, 3000)
 
@@ -89,11 +88,11 @@ function upgradeQtyRender(qty: number) {
 </script>
 
 <template>
-  <div>
-    <div v-for="(quantity, key) in resources" :key="key">
+  <div class="w-1/2 m-auto flex justify-between rounded p-2 flex flex-row">
+    <div class="mr-5" v-for="(quantity, key) in resources" :key="key">
       <p v-if="quantity > 0" class="text-white flex items-center space-x-1">
         <img :src="image(key)" class="w-8 h-8" />
-        <span class="font-bold">{{ key }}: {{ upgradeQtyRender(quantity) }}</span>
+        <span class="font-bold text-blue-400">{{ upgradeQtyRender(quantity) }}</span>
       </p>
     </div>
   </div>

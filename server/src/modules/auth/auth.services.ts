@@ -1,4 +1,4 @@
-import { type AuthRegisterBody, type SimpleUser, type AuthLoginBody } from '@/types/auth.types'
+import { type AuthRegisterBody, type SimpleUser, type AuthLoginBody, type User } from '@/types/auth.types'
 import { Users } from '@/db/models/User'
 import crypto from 'crypto'
 import jwt from 'jsonwebtoken'
@@ -21,7 +21,7 @@ export async function register (body: AuthRegisterBody): Promise<{ success: bool
     return { success: false, message: 'Password is not valid, it must contain at least 8 characters with 1 capslock and 1 special character' }
   }
 
-  const alreadyExist = await Users.findOne({ username: body.username }) ?? await Users.findOne({ email: body.email })
+  const alreadyExist: WithId<User> | null = await Users.findOne({ username: body.username }) ?? await Users.findOne({ email: body.email })
   if (alreadyExist) {
     return { success: false, message: 'User already exists' }
   }
@@ -31,7 +31,7 @@ export async function register (body: AuthRegisterBody): Promise<{ success: bool
     return { success: false, message: 'Passwords are not the same' }
   }
 
-  const hashedPassword = crypto.createHash('sha256').update(body.password).digest('hex')
+  const hashedPassword: string = crypto.createHash('sha256').update(body.password).digest('hex')
 
   await Users.insertOne({
     email: body.email,
@@ -51,7 +51,7 @@ export async function register (body: AuthRegisterBody): Promise<{ success: bool
     completed_success: []
   })
 
-  const token = jwt.sign({ username: body.username, createdAt: Date() }, process.env.JWT_SECRET ?? '')
+  const token: string = jwt.sign({ username: body.username, createdAt: Date() }, process.env.JWT_SECRET ?? '')
 
   return { success: true, token }
 }
@@ -61,25 +61,25 @@ export async function login (body: AuthLoginBody): Promise<{ success: boolean, m
     return { success: false, message: 'Please fill all the fields' }
   }
 
-  const user = await Users.findOne({ username: body.emailOrUsername }) ?? await Users.findOne({ email: body.emailOrUsername })
+  const user: WithId<User> | null = await Users.findOne({ username: body.emailOrUsername }) ?? await Users.findOne({ email: body.emailOrUsername })
   if (!user) {
     return { success: false, message: 'User not found in our storage' }
   }
 
-  const hashedPassword = crypto.createHash('sha256').update(body.password).digest('hex')
+  const hashedPassword: string = crypto.createHash('sha256').update(body.password).digest('hex')
   if (user.password !== hashedPassword) {
     return { success: false, message: 'Bad password' }
   }
 
   // Create a token using the username and the current date hashed
-  const token = jwt.sign({ username: user.username, createdAt: Date() }, process.env.JWT_SECRET ?? '')
+  const token: string = jwt.sign({ username: user.username, createdAt: Date() }, process.env.JWT_SECRET ?? '')
 
   return { success: true, token }
 }
 export async function findByToken (token: string): Promise<{ success: boolean, message?: string, user?: WithId<SimpleUser> }> {
   try {
     // Verify the token using the secret key
-    const decoded = jwt.verify(token, process.env.JWT_SECRET ?? '')
+    const decoded: string | jwt.JwtPayload = jwt.verify(token, process.env.JWT_SECRET ?? '')
 
     if (typeof decoded === 'string') {
       // Handle the case where the decoded value is a string (invalid token)

@@ -2,7 +2,7 @@ import { type NextFunction, type Request, type Response } from 'express'
 import { findByToken } from './auth.services'
 
 export async function isLogin (req: Request, _res: Response, next: NextFunction): Promise<void> {
-  const bearer = req.headers.authorization // Bearer TOKEN
+  const bearer: string | undefined = req.headers.authorization // Bearer TOKEN
   if (bearer) {
     /*     _ = Bearer
                token = TOKEN */

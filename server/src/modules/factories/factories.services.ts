@@ -1,12 +1,14 @@
 import { Factory } from '@/db/models/Factories'
 import { type Factories } from '@/types/factories.types'
-import { ObjectId } from 'mongodb'
+import { ObjectId, type WithId } from 'mongodb'
 import { type User } from '@/types/auth.types'
 import { Users } from '@/db/models/User'
 import { FactoryRessources } from '@/db/models/FactoriesRessources'
+import { checkSuccess } from '@/modules/success/success.services'
+import { type factoriesResources } from '@/types/factoriesRessources.types'
 
 export async function getFactories (): Promise<Factories[] | unknown> {
-  const factories = await Factory?.find().toArray()
+  const factories: Array<WithId<Factories>> = await Factory?.find().toArray()
   if (!factories) {
     return { message: 'No factories found' }
   }
@@ -14,7 +16,7 @@ export async function getFactories (): Promise<Factories[] | unknown> {
 }
 
 export async function getFactoriesByUser (user: string): Promise<Factories | unknown> {
-  const factory = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
+  const factory: WithId<Factories>[] = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
   if (!factory) {
     return { message: 'No factories found' }
   }
@@ -30,6 +32,19 @@ export async function createFactory (user: string, type: string): Promise<unknow
     user_id: new ObjectId(user)
   })
 
+  const factories: Array<WithId<Factories>> | null = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
+  const fullUser: WithId<User> | null = await Users?.findOne({ _id: new ObjectId(user) })
+  if (!factories) {
+    return { message: 'No factories found' }
+  } else {
+    for (const quantity of [1, 5, 10]) {
+      if (factories.length >= quantity) {
+        await checkSuccess(fullUser, `${quantity}_factories`)
+      }
+    }
+
+    await checkSuccess(fullUser, 'factory_1')
+  }
   return { message: 'Creation Successful' }
 }
 
@@ -50,18 +65,17 @@ export async function getFactoryAllResources(): Promise<unknown> {
 }
 
 export async function upgradeFactory (factoryId: string, user: User): Promise<unknown> {
-  const factory = await Factory.findOne({ _id: new ObjectId(factoryId) })
-  const requiredResources = await FactoryRessources.findOne({ type: factory?.type })
+  const factory: WithId<Factories> | null = await Factory.findOne({ _id: new ObjectId(factoryId) })
+  const requiredResources: WithId<factoriesResources> | null = await FactoryRessources.findOne({ type: factory?.type })
 
   if (!factory || !requiredResources) {
     return { message: requiredResources }
   }
   if (factory.level === 10) {
-    return { message: 'Your factory is max level' }
+    return { message: 'Your factory is at max level' }
   }
-
-  if (user._id != factory.user_id) {
-    return { message: 'This isnt your factory' }
+  if (factory.user_id.toString() !== user._id?.toString()) {
+    return { message: 'This is not your factory' }
   }
   const userResources = user.resources
   if (!userResources) {
@@ -82,7 +96,7 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
   }
 
   if ((!user.money || user.money) && user.money < requiredResources.resources[factory.level].money) {
-    return { message: 'You dont have enough money to upgrade' }
+    return { message: 'You do not have enough money to upgrade' }
   }
 
   const newFactory = {
@@ -93,6 +107,30 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     type: factory.type
   }
   if (factory._id) {
+    for (const level of [5, 10]) {
+      if (factory.level + 1 === level) {
+        await checkSuccess(user, `factory_${level}`)
+      }
+    }
+
+    // Get all the factories different of level 1 and 0
+    const factoriesUpgraded: Array<WithId<Factories>> = await Factory.find({ level: { $gt: 1 } }).toArray()
+    let countedLevelUps: number = 0
+
+    for (const factoryUpgraded of factoriesUpgraded) {
+      if (factoryUpgraded.level > 1) {
+        countedLevelUps++
+      }
+    }
+
+    const levelsToCheck: number[] = [1, 5, 10]
+
+    for (const level of levelsToCheck) {
+      if (countedLevelUps > level) {
+        await checkSuccess(user, `upgrade_${level}_factories`)
+      }
+    }
+
     await Factory?.updateOne({ _id: new ObjectId(factory._id) }, { $set: newFactory })
     await Users?.updateOne({ _id: new ObjectId(user._id) }, {
       $set: {
@@ -100,8 +138,8 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
         resources: userResources
       }
     })
-    return { message: 'You have upgraded successfully' }
+    return { message: `You have upgraded successfully your factory to level ${factory.level + 1}` }
   }
 
-  return { message: 'Wrong Factory' }
+  return { message: 'An error has occurred' }
 }

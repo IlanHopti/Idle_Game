@@ -4,8 +4,6 @@ import { login, register } from './auth.services'
 import { requireLogin } from './auth.middleware'
 
 export function registerAuthRoutes (app: Express): void {
-  // on enregistre une route /auth/register
-  // .TypeParams, TypeQuery, TypeBody
   app.post('/auth/register', async (req: Request<unknown, unknown, AuthRegisterBody>, res: Response): Promise<void> => {
     const result = await register(req.body)
 
@@ -28,8 +26,7 @@ export function registerAuthRoutes (app: Express): void {
   app.get('/auth/me', requireLogin, (req, res): void => {
     res.json(req.user)
   })
-  app.get('/auth/logout', (req, res): void => {
-    console.log(req)
+  app.get('/auth/logout', (_req, res): void => {
     res.clearCookie('token')
     res.json({ message: 'Vous êtes bien déconnecté' })
   })

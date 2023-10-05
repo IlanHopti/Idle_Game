@@ -4,11 +4,26 @@ import { Users } from '@/db/models/User'
 import type { Market, creationOffer } from '@/types/market.types'
 import { ObjectId } from 'mongodb'
 
-export async function getMarkets (): Promise<Market[] | unknown> {
-  const markets = await Markets.find().toArray()
+export async function getMarkets (sort: string, type: string | undefined = undefined): Promise<Market[] | unknown> {
+  console.log(sort)
+
+  const query: any = { status: 'Pending' }
+  if (type) {
+    query.resource = type
+  }
+
+  const markets = await Markets.find(query).toArray()
+
   if (!markets) {
     return { message: 'No markets found' }
   }
+
+  if (sort === 'asc') {
+    markets.sort((a, b) => a.price - b.price)
+  } else if (sort === 'desc') {
+    markets.sort((a, b) => b.price - a.price)
+  }
+
   return markets
 }
 

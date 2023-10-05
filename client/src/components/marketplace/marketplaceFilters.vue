@@ -4,12 +4,14 @@ import { ref, watch, defineProps, defineEmits } from 'vue'
 const props = defineProps<{
   type: string
   sort: string
+  owner: string
 }>()
 
 const selectedType = ref(props.type)
 const selectedSort = ref(props.sort)
+const selectedOwner = ref(props.owner) // Initialisez la variable avec "Me" par défaut
 
-const emits = defineEmits(['updateType', 'updateSort'])
+const emits = defineEmits(['updateType', 'updateSort', 'updateOwner'])
 
 // Fonction pour émettre la mise à jour de la valeur "type"
 function emitTypeUpdate(newType: string) {
@@ -21,12 +23,20 @@ function emitSortUpdate(newSort: string) {
   emits('updateSort', newSort)
 }
 
+function emitOwnerUpdate(newOwner: string) {
+  emits('updateOwner', newOwner)
+}
+
 watch(selectedType, (newType) => {
   emitTypeUpdate(newType)
 })
 
 watch(selectedSort, (newSort) => {
   emitSortUpdate(newSort)
+})
+
+watch(selectedOwner, (newOwner) => {
+  emitOwnerUpdate(newOwner)
 })
 </script>
 
@@ -96,6 +106,19 @@ watch(selectedSort, (newSort) => {
         <option value="Iron">Iron</option>
         <option value="Gold">Gold</option>
         <option value="Diamond">Diamond</option>
+      </select>
+    </div>
+    <div class="mb-4">
+      <label class="block text-sm font-medium text-gray-700 dark:text-gray-200"> Owner </label>
+      <select
+        id="owner"
+        name="owner"
+        v-model="selectedOwner"
+        @change="emitOwnerUpdate(props.owner)"
+        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md dark:bg-gray-700 dark:text-gray-300"
+      >
+        <option value="Other">Other</option>
+        <option value="Me">Me</option>
       </select>
     </div>
   </div>

@@ -5,4 +5,5 @@ export interface MarketInterface {
   status?: string
   date?: Date
   resource: string
+  _id?: string | undefined
 }

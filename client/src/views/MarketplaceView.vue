@@ -11,16 +11,19 @@ import DiamondResource from '../../public/resources/diamond.png'
 import GoldResource from '../../public/resources/gold_ingot.png'
 
 import { useMarketStore } from '@/stores/market'
+import { useUserStore } from '@/stores/user'
 import type { MarketInterface } from '@/types/market.interface'
 
 import MarketplaceFilters from '@/components/marketplace/marketplaceFilters.vue'
 import MarketlaceAddSell from '@/components/marketplace/marketplaceAddSell.vue'
 
 const market = useMarketStore()
+const user = useUserStore()
 
 let marketList = ref<MarketInterface[]>([])
 const type = ref('Wood')
 const sort = ref('asc')
+const owner = ref('Other')
 
 function updateType(newType: string) {
   type.value = newType
@@ -33,10 +36,23 @@ function updateSort(newSort: string) {
   onParamsChange(type.value, newSort)
 }
 
+function updateOwner(newOwner: string) {
+  owner.value = newOwner
+  // add filter by owner on market
+  marketList.value = market.market.filter((item) => {
+    if (newOwner === 'Me') {
+      return item.seller_id === user.user._id.toString()
+    } else {
+      return item.seller_id !== user.user._id.toString()
+    }
+  })
+}
+
 // Function to change the params of the fetch by the filters
 function onParamsChange(newType: string, newSort: string) {
   market.fetchMarket(newType, newSort).then(() => {
     marketList.value = market.market
+    updateOwner(owner.value)
   })
 }
 
@@ -47,10 +63,13 @@ watch([type, sort], ([newType, newSort]) => {
 // marketplace
 market.fetchMarket(type.value, sort.value).then(() => {
   marketList.value = market.market
+  updateOwner(owner.value)
 })
 
+// watch the market to update the list with updateOwner function
 watch(market, () => {
   marketList.value = market.market
+  updateOwner(owner.value)
 })
 
 function image(key: string) {
@@ -86,19 +105,60 @@ function upgradeQtyRender(qty: number) {
   return qty.toFixed(1) + suffixes[index]
 }
 
-const buyArticle = () => {
+const buyArticle = (item: MarketInterface) => {
+  if (item.seller_id === user.user._id.toString()) {
+    Swal.fire({
+      title: 'Remove Sell',
+      text: 'Do you want to remove this sell?',
+      icon: 'question',
+      showCancelButton: true,
+      confirmButtonText: 'Remove',
+      cancelButtonText: 'Cancel',
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33'
+    }).then((result) => {
+      if (result.isConfirmed && item._id) {
+        market.removeArticle(item._id, type.value).then(() => {
+          Swal.fire({
+            title: 'Success',
+            text: 'You have successfully removed the article',
+            icon: 'success',
+            confirmButtonText: 'Ok'
+          })
+        })
+      }
+    })
+    return
+  }
+
   Swal.fire({
-    title: 'Are you sure?',
-    text: 'You will buy this article',
-    icon: 'warning',
+    title: 'Buy Article',
+    html: `
+    <p
+      class="flex flex-row items-center justify-center text-sm font-medium text-center m-auto"
+    >
+      Are you sure you want to buy ${item.quantity}
+      <img class="w-5 h-auto mr-1" src="${image(item.resource.toLowerCase())}" alt="wood" />
+      for ${item.price}
+      <img class="w-5 mr-1" src="${CoinResource}" alt="" />
+      ?
+    </p>`,
+    icon: 'info',
     showCancelButton: true,
-    confirmButtonText: 'Yes, buy it!',
-    cancelButtonText: 'No, cancel!',
+    confirmButtonText: 'Buy',
+    cancelButtonText: 'Cancel',
     confirmButtonColor: '#3085d6',
     cancelButtonColor: '#d33'
   }).then((result) => {
-    if (result.isConfirmed) {
-      Swal.fire('Bought!', 'Your article has been bought.', 'success')
+    if (result.isConfirmed && item._id) {
+      market.buyArticle(item._id, type.value).then(() => {
+        Swal.fire({
+          title: 'Success',
+          text: 'You have successfully bought the article',
+          icon: 'success',
+          confirmButtonText: 'Ok'
+        })
+      })
     }
   })
 }
@@ -138,11 +198,18 @@ const buyArticle = () => {
   <MarketlaceAddSell :type="type" :sort="sort" :market="market" />
 
   <!-- filters component -->
-  <MarketplaceFilters :type="type" :sort="sort" @updateType="updateType" @updateSort="updateSort" />
+  <MarketplaceFilters
+    :type="type"
+    :sort="sort"
+    :owner="owner"
+    @updateType="updateType"
+    @updateSort="updateSort"
+    @update-owner="updateOwner"
+  />
 
   <!-- marketplace -->
   <div class="grid grid-cols-4 gap-5">
-    <div v-for="item in marketList">
+    <div v-for="(item, index) in marketList">
       <div
         class="flex flex-col justify-center items-center border-2 border-solid rounded-lg w-32 pl-6 pr-6 m-auto"
         :class="`border-${item.resource.toLowerCase()}`"
@@ -152,9 +219,9 @@ const buyArticle = () => {
 
         <button
           type="button"
-          :onclick="buyArticle"
-          class="flex flex-row items-center text-sm hover:text-white border font-medium rounded-lg pl-5 pr-8 py-2.5 text-center my-2"
-          :class="`border-${item.resource.toLowerCase()} hover:bg-${item.resource.toLowerCase()} `"
+          @click="buyArticle(item)"
+          class="flex flex-row items-center text-sm border font-medium rounded-lg pl-5 pr-8 py-2.5 text-center my-2"
+          :class="`border-${item.resource.toLowerCase()} `"
         >
           <span class="font-bold">{{ upgradeQtyRender(item.price) }}</span>
           <img class="w-5" :src="CoinResource" alt="" />

@@ -35,6 +35,28 @@ export const useMarketStore = defineStore('market', {
         .catch((error) => {
           console.log(error)
         })
+    },
+    async buyArticle(id: string, type: string) {
+      await axios
+        .put(`http://localhost:3001/market/confirm/${id}`, {}, { withCredentials: true })
+        .then((response) => {
+          console.log('response', response.data.message)
+          this.fetchMarket(type, 'asc')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    async removeArticle(id: string, type: string) {
+      await axios
+        .put(`http://localhost:3001/market/cancel/${id}`, {}, { withCredentials: true })
+        .then((response) => {
+          console.log('response', response.data.message)
+          this.fetchMarket(type, 'asc')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   }
 })

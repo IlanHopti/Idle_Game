@@ -104,7 +104,7 @@ export async function cancelOrder (offerId: string, userId: ObjectId): Promise<u
     return { mesage: 'User is not authorised to cancel this order' }
   }
 
-  if (offer.status === 'Canceled') {
+  if (offer.status === 'Canceled' || offer.status === 'Confirmed') {
     return { message: 'The offer is already canceled' }
   }
 

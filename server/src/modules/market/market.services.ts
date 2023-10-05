@@ -4,7 +4,7 @@ import { Users } from '@/db/models/User'
 import type { Market, creationOffer } from '@/types/market.types'
 import { ObjectId } from 'mongodb'
 
-export async function getMarkets(): Promise<Market[] | unknown> {
+export async function getMarkets (): Promise<Market[] | unknown> {
   const markets = await Markets.find().toArray()
   if (!markets) {
     return { message: 'No markets found' }
@@ -12,7 +12,7 @@ export async function getMarkets(): Promise<Market[] | unknown> {
   return markets
 }
 
-export async function getOneOffer(offerId: string): Promise<Market | unknown> {
+export async function getOneOffer (offerId: string): Promise<Market | unknown> {
   const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
   if (!offer) {
     return { message: 'No offers found' }
@@ -20,7 +20,7 @@ export async function getOneOffer(offerId: string): Promise<Market | unknown> {
   return offer
 }
 
-export async function createOffer(offer: creationOffer): Promise<unknown> {
+export async function createOffer (offer: creationOffer): Promise<unknown> {
   if (offer.quantity < 0 || !offer.quantity) {
     return { message: 'Please select a quantity' }
   }
@@ -49,7 +49,7 @@ export async function createOffer(offer: creationOffer): Promise<unknown> {
   return { message: 'Offer not created, a probleme has occured' }
 }
 
-export async function confirmOffer(offerId: string, buyerId: string): Promise<unknown> {
+export async function confirmOffer (offerId: string, buyerId: string): Promise<unknown> {
   const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
   const buyer = await Users.findOne({ _id: new ObjectId(buyerId) })
   if (!offer || !buyer) {
@@ -69,8 +69,8 @@ export async function confirmOffer(offerId: string, buyerId: string): Promise<un
   if (!resourceType || !buyerResource || !sellerResource) {
     return { message: 'An error has occurred' }
   }
-  buyerResource[resourceType] -= offer.quantity
-  sellerResource[resourceType] += offer.quantity
+  buyerResource[resourceType] += offer.quantity
+  sellerResource[resourceType] -= offer.quantity
   await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Confirmed' } })
   await Transaction.insertOne({
     seller_id: new ObjectId(offer.seller_id),
@@ -83,10 +83,16 @@ export async function confirmOffer(offerId: string, buyerId: string): Promise<un
   })
   await Users.updateOne({ _id: new ObjectId(buyerId) }, {
     $set: {
+      money: buyer.money - offer.price,
       resources: buyerResource
     }
   })
-  await Users.updateOne({ _id: new ObjectId(buyerId) }, { $set: { resources: sellerResource } })
+  await Users.updateOne({ _id: new ObjectId(buyerId) }, {
+    $set: {
+      money: seller.money + offer.price,
+      resources: sellerResource
+    }
+  })
 
   return { message: 'Successfully bought the offer !' }
 }

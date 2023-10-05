@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import FactoryColumn from '../components/factoriesColumn.vue'
-import {useUserStore} from "@/stores/user";
+import { useUserStore } from '@/stores/user'
 
 const handleClick = (e: Event) => {
-  useUserStore().redeemResources()
+  if (useUserStore().user.length !== 0) {
+    useUserStore().redeemResources()
+  }
 }
 </script>
 

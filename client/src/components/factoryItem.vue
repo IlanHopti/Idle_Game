@@ -4,7 +4,15 @@ import FactoryModal from '../components/factoryModal.vue'
 
 const factoryLevelMax = ref(10)
 const factoryProduction = ref(5)
-const unitsNeededForUpgrade = ref({ wood: 10, coin: 20, iron: 3000, coal: 2000, gold:4000, diamond: 1, stone: 300 })
+const unitsNeededForUpgrade = ref({
+  wood: 10,
+  coin: 20,
+  iron: 3000,
+  coal: 2000,
+  gold: 4000,
+  diamond: 1,
+  stone: 300
+})
 
 const props = defineProps<{
   factoryName: string

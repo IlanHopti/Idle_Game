@@ -1,16 +1,15 @@
-import jwt from 'jsonwebtoken';
-import {Users} from "@/db/models/User";
-import {Factory} from "@/db/models/Factories";
+import jwt from 'jsonwebtoken'
+import { Users } from '@/db/models/User'
+import { Factory } from '@/db/models/Factories'
 
-export async function getUser(token: string) {
+export async function getUser (token: string) {
   try {
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET ?? '');
+    const decodedToken = jwt.verify(token, process.env.JWT_SECRET ?? '')
 
     if (typeof decodedToken === 'object' && decodedToken.hasOwnProperty('username')) {
-      const username: any = decodedToken.username;
+      const username: any = decodedToken.username
 
-
-      const user = await Users.findOne({ username });
+      const user = await Users.findOne({ username })
 
       if (!user) {
         console.error('User not found in the db')
@@ -27,9 +26,8 @@ export async function getUser(token: string) {
   }
 }
 
-export async function redeemResources(user: any): Promise<void> {
-
-  const resourcesToGive: { [key: string]: number } = {
+export async function redeemResources (user: any): Promise<void> {
+  const resourcesToGive: Record<string, number> = {
     stone: 0,
     iron: 0,
     gold: 0,
@@ -70,10 +68,10 @@ export async function redeemResources(user: any): Promise<void> {
   }
 }
 
-export async function redeemOfflineResources(user: any): Promise<void> {
+export async function redeemOfflineResources (user: any): Promise<void> {
   console.log('redeemOfflineResources')
 
-  const resourcesToGive: { [key: string]: number } = {
+  const resourcesToGive: Record<string, number> = {
     stone: 0,
     iron: 0,
     gold: 0,
@@ -112,14 +110,14 @@ export async function redeemOfflineResources(user: any): Promise<void> {
   for (const resource in resourcesToGive) {
     const amount = resourcesToGive[resource]
     if (amount > 0) {
-      await Users.updateOne({_id: user._id}, {
+      await Users.updateOne({ _id: user._id }, {
         $inc: {
           [`resources.${resource}`]: amount
         }
       })
 
       // Change the date of the last action
-      await Users.updateOne({_id: user._id}, {
+      await Users.updateOne({ _id: user._id }, {
         $set: {
           last_action: new Date()
         }

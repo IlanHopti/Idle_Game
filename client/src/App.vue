@@ -30,6 +30,15 @@ onMounted(() => {
     unwatchIsLogged()
   })
 })
+
+// Fetch user data when the component is mounted
+onMounted(async () => {
+  try {
+    await userConnected.fetchUser()
+  } catch (err) {
+    console.error(err)
+  }
+})
 </script>
 
 <style scoped>

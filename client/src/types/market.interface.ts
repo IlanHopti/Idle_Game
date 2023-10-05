@@ -7,3 +7,9 @@ export interface MarketInterface {
   resource: string
   _id?: string | undefined
 }
+
+export interface FastSell{
+  quantity: number
+  resource:string
+  seller_id: string
+}

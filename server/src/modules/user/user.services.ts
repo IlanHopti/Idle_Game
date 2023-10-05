@@ -44,7 +44,7 @@ export async function redeemResources(user: any): Promise<void> {
       types.forEach((type) => {
         // If the type of the factory is the same as the type of the resource
         if (factory.type.toLowerCase() === type) {
-          resourcesToGive[type] = resourcesToGive[type] + factory.production
+          resourcesToGive[type] = resourcesToGive[type] + factory.production ^ factory.level
         }
       })
     })
@@ -62,6 +62,64 @@ export async function redeemResources(user: any): Promise<void> {
 
       // Change the date of the last action
       await Users.updateOne({ _id: user._id }, {
+        $set: {
+          last_action: new Date()
+        }
+      })
+    }
+  }
+}
+
+export async function redeemOfflineResources(user: any): Promise<void> {
+  console.log('redeemOfflineResources')
+
+  const resourcesToGive: { [key: string]: number } = {
+    stone: 0,
+    iron: 0,
+    gold: 0,
+    diamond: 0,
+    coal: 0,
+    wood: 0
+  }
+  const types = ['stone', 'iron', 'gold', 'diamond', 'coal', 'wood']
+
+  const timeOffline = new Date().getTime() - new Date(user.last_action).getTime()
+
+  // Convert it to seconds
+  const timeOfflineInSeconds = timeOffline / 1000
+
+  console.log(timeOfflineInSeconds)
+
+  if (timeOfflineInSeconds < 3) {
+    console.log('Not enough time offline')
+    return
+  }
+  const timeOfflineConverted = timeOfflineInSeconds / 3
+
+  await Factory.find({ user_id: user._id }).toArray().then((factories) => {
+    // For each factories print their type
+    factories.forEach((factory) => {
+      types.forEach((type) => {
+        // If the type of the factory is the same as the type of the resource
+        if (factory.type.toLowerCase() === type) {
+          resourcesToGive[type] = resourcesToGive[type] + (factory.production ^ factory.level) * timeOfflineConverted
+        }
+      })
+    })
+  })
+
+  // Now for each resources we add the amount to the user
+  for (const resource in resourcesToGive) {
+    const amount = resourcesToGive[resource]
+    if (amount > 0) {
+      await Users.updateOne({_id: user._id}, {
+        $inc: {
+          [`resources.${resource}`]: amount
+        }
+      })
+
+      // Change the date of the last action
+      await Users.updateOne({_id: user._id}, {
         $set: {
           last_action: new Date()
         }

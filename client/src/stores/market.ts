@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from 'axios'
 import router from '@/router'
 import { ref } from 'vue'
-import type { MarketInterface } from '@/types/market.interface'
+import type { MarketInterface, FastSell } from '@/types/market.interface'
 
 interface MarketState {
   market: MarketInterface[]
@@ -53,6 +53,17 @@ export const useMarketStore = defineStore('market', {
         .then((response) => {
           console.log('response', response.data.message)
           this.fetchMarket(type, 'asc')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+    },
+    async fastSell(article:FastSell){
+      await axios
+        .post('http://localhost:3001/market/sell', { article }, { withCredentials: true })
+        .then((response) => {
+          console.log('response', response.data.message)
+          this.fetchMarket(article.resource, 'asc')
         })
         .catch((error) => {
           console.log(error)

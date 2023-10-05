@@ -89,13 +89,11 @@ export async function redeemOfflineResources (user: any): Promise<void> {
   // Convert it to seconds
   const timeOfflineInSeconds = timeOffline / 1000
 
-  console.log(timeOfflineInSeconds)
-
   if (timeOfflineInSeconds < 3) {
     console.log('Not enough time offline')
     return
   }
-  const timeOfflineConverted = timeOfflineInSeconds / 3
+  const timeOfflineConverted: number = parseInt((timeOfflineInSeconds / 3).toFixed(0))
 
   await Factory.find({ user_id: user._id }).toArray().then((factories) => {
     if (factories.length === 0) {

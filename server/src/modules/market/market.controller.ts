@@ -37,7 +37,17 @@ export function marketRoutes (app: Express): void {
 
   app.put('/market/confirm/:id', async (req: Request, res: Response) => {
     try {
-      const result = await confirmOffer(req.params.id, req.body.user_id)
+      const token = req.cookies.token
+      if (!token) {
+        res.status(401).json({ message: 'Unauthorized' })
+        return
+      }
+      const user = await getUser(token)
+      if (!user) {
+        res.status(401).json({ message: 'Unauthorized' })
+        return
+      }
+      const result = await confirmOffer(req.params.id, user._id.toString())
       res.json(result)
     } catch (error) {
       res.status(500).json({ error })
@@ -46,7 +56,17 @@ export function marketRoutes (app: Express): void {
 
   app.put('/market/cancel/:id', async (req: Request, res: Response) => {
     try {
-      const result = await cancelOrder(req.params.id, req.body.user_id)
+      const token = req.cookies.token
+      if (!token) {
+        res.status(401).json({ message: 'Unauthorized' })
+        return
+      }
+      const user = await getUser(token)
+      if (!user) {
+        res.status(401).json({ message: 'Unauthorized' })
+        return
+      }
+      const result = await cancelOrder(req.params.id, user._id)
       res.json(result)
     } catch (error) {
       res.status(500).json({ error })

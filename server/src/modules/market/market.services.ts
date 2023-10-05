@@ -62,22 +62,30 @@ export async function createOffer (offer: creationOffer): Promise<unknown> {
     return { message: 'Offer created successfully' }
   }
 
-  return { message: 'Offer not created, a probleme has occured' }
+  return { message: 'Offer was not created, a problem has occured' }
 }
 
 export async function confirmOffer (offerId: string, buyerId: string): Promise<unknown> {
   const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
   const buyer = await Users.findOne({ _id: new ObjectId(buyerId) })
   if (!offer || !buyer) {
-    return { message: 'Offer not found' }
+    return { message: 'Offer is not found' }
+  }
+
+  if (offer.seller_id.toString() === buyerId) {
+    return { message: 'You cannot buy your own offer' }
   }
   const seller = await Users.findOne({ _id: new ObjectId(offer.seller_id) })
   if (!seller) {
-    return { message: 'seller not found' }
+    return { message: 'Seller not found' }
   }
 
   if (offer.status === 'Confirmed') {
-    return { message: 'Cant bought an already completed offer' }
+    return { message: 'You cannot buy an already completed offer' }
+  }
+
+  if (offer.status === 'Canceled') {
+    return { message: 'You cannot buy an offer that has been canceled' }
   }
   const resourceType = offer.resource.toLowerCase()
   const buyerResource = buyer.resources
@@ -110,22 +118,25 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
     }
   })
 
-  return { message: 'Successfully bought the offer !' }
+  return { message: 'You successfully bought the offer !' }
 }
 
 export async function cancelOrder (offerId: string, userId: ObjectId): Promise<unknown> {
   const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
   // eslint-disable-next-line eqeqeq
-  if (!offer || offer.seller_id != userId) {
+  console.log(offer?.seller_id, userId)
+  if (!offer || offer.seller_id.toString() !== userId.toString()) {
     return { mesage: 'User is not authorised to cancel this order' }
   }
 
-  if (offer.status === 'Canceled' || offer.status === 'Confirmed') {
-    return { message: 'The offer is already canceled' }
+  if (offer.status === 'Canceled') {
+    return { message: 'The offer is already canceled !' }
+  } else if (offer.status === 'Confirmed') {
+    return { message: 'The offer is not available anymore !' }
   }
 
   await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Canceled' } })
-  return { message: 'Successfully canceled the offer' }
+  return { message: 'You successfully canceled the offer !' }
 }
 
 export async function instantSell (offer: fastSell, user: User): Promise<unknown> {

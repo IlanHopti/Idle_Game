@@ -37,7 +37,10 @@ export async function redeemResources (user: any): Promise<void> {
   }
   const types = ['stone', 'iron', 'gold', 'diamond', 'coal', 'wood']
   await Factory.find({ user_id: user._id }).toArray().then((factories) => {
-    // For each factories print their type
+    if (factories.length === 0) {
+      console.log('No factories')
+      return
+    }
     factories.forEach((factory) => {
       types.forEach((type) => {
         // If the type of the factory is the same as the type of the resource
@@ -95,6 +98,10 @@ export async function redeemOfflineResources (user: any): Promise<void> {
   const timeOfflineConverted = timeOfflineInSeconds / 3
 
   await Factory.find({ user_id: user._id }).toArray().then((factories) => {
+    if (factories.length === 0) {
+      console.log('No factories')
+      return
+    }
     // For each factories print their type
     factories.forEach((factory) => {
       types.forEach((type) => {

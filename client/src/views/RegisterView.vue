@@ -62,7 +62,7 @@ const registeredUser = useUserStore()
 registeredUser
   .fetchUser()
   .then(() => {
-    if (registeredUser.user) {
+    if (registeredUser.user.length !== 0) {
       router.push('/')
     }
   })

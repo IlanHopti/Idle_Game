@@ -36,7 +36,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import axios from 'axios'
 import router from '@/router'
 import { useUserStore } from '@/stores/user'
 
@@ -49,7 +48,7 @@ const connectUser = useUserStore()
 connectUser
   .fetchUser()
   .then(() => {
-    if (connectUser.user) {
+    if (connectUser.user.length !== 0) {
       router.push('/')
     }
   })

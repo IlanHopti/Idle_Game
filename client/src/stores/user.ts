@@ -6,23 +6,27 @@ import { ref } from 'vue'
 interface UserState {
   user: UserInterface[]
   isLogged: boolean
+  resources: any[]
+  money: number
 }
 
 export const useUserStore = defineStore('user', {
   state: (): UserState => ({
     user: [],
-    isLogged: false
+    isLogged: false,
+    resources: [],
+    money: 0
   }),
   actions: {
     async fetchUser() {
       try {
         const response = await axios.get('http://localhost:3001/auth/me', { withCredentials: true })
         this.user = response.data.user
+        this.resources = this.user.resources
+        this.user.resources.coin = this.user.money
         this.isLogged = true
       } catch (error) {
-        console.log(error)
         this.isLogged = false
-        throw error
       }
     },
     async register(
@@ -58,7 +62,6 @@ export const useUserStore = defineStore('user', {
         )
         this.isLogged = true
 
-        // Update dynamically the user
         await this.fetchUser()
 
         return response.data
@@ -71,13 +74,39 @@ export const useUserStore = defineStore('user', {
     async logout() {
       axios
         .get('http://localhost:3001/auth/logout', { withCredentials: true })
-        .then((response) => {
+        .then(async (response) => {
           this.isLogged = false
-          this.user = response.data
+          this.user = []
         })
         .catch((error) => {
           console.log(error)
         })
+    },
+    async redeemResources() {
+      try {
+        await axios.post(
+          'http://localhost:3001/user/redeem/resources',
+          {},
+          { withCredentials: true }
+        )
+        await this.fetchUser()
+        this.user.resources.coin = this.user.money
+      } catch (error) {
+        console.error('Error during redeeming resources:')
+      }
+    },
+    async getOfflineResources() {
+      try {
+        await axios.post(
+          'http://localhost:3001/user/offline/resources',
+          {},
+          { withCredentials: true }
+        )
+        await this.fetchUser()
+        this.user.resources.coin = this.user.money
+      } catch (error) {
+        console.error('Error during redeeming resources:')
+      }
     }
   }
 })

@@ -1,3 +1,4 @@
+e
 <template>
   <header class="bg-[#43c8b7] py-4">
     <div class="container mx-auto">

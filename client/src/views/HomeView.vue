@@ -20,10 +20,17 @@ function showModal(id: string) {
   // console.log(factories.getFactory(id))
   isShowModal.value = true
 }
+
+
+const handleClick = (e: Event) => {
+  if (useUserStore().user.length !== 0) {
+    useUserStore().redeemResources()
+  }
+}
 </script>
 
 <template>
-  <main>
+  <main @click="handleClick">
     <div>
       <!--      <Modal :size="'xs'" v-if="isShowModal" @close="closeModal">
         <template #header>

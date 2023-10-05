@@ -1,7 +1,7 @@
 import { Success } from '@/db/models/Success'
-import { type Successes } from '@/types/success.types'
+import { type Resources, type Successes } from '@/types/success.types'
 import { Users } from '@/db/models/User'
-import { ObjectId } from 'mongodb'
+import { ObjectId, type WithId } from 'mongodb'
 
 export async function fetchAllSuccesses (): Promise<Successes | unknown> {
   const successes = await Success?.find().toArray()
@@ -23,14 +23,14 @@ export async function fetchAchievedSuccesses (user: any): Promise<Successes | un
 }
 
 export async function checkSuccess (user: any, tag: string): Promise<void> {
-  const success = await Success?.findOne({ tag })
+  const success: WithId<Successes> | null = await Success?.findOne({ tag })
   if (!success) {
     return
   }
 
   user.achievements = user.achievements || []
 
-  const successId = new ObjectId(success._id)
+  const successId: ObjectId = new ObjectId(success._id)
 
   if (!user.achievements.some((achievement: any) => achievement.equals(successId))) {
     user.achievements.push(successId)
@@ -44,7 +44,7 @@ export async function checkSuccess (user: any, tag: string): Promise<void> {
     // Add the rewards to the user
     if (success.rewards) {
       for (const reward in success.rewards) {
-        const amount = success.rewards[reward]
+        const amount: Resources = success.rewards[reward]
 
         if (reward !== 'money') {
           await Users.updateOne({ _id: user._id }, {

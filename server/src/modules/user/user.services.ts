@@ -2,11 +2,15 @@ import jwt from 'jsonwebtoken'
 import { Users } from '@/db/models/User'
 import { Factory } from '@/db/models/Factories'
 import { checkSuccess } from '@/modules/success/success.services'
+import { type WithId } from 'mongodb'
+import { type Factories } from '@/types/factories.types'
+import { type User } from '@/types/auth.types'
 
-export async function getUser (token: string) {
+export async function getUser (token: string): Promise<Promise<WithId<User>> | null> {
   try {
     const decodedToken = jwt.verify(token, process.env.JWT_SECRET ?? '')
 
+    // eslint-disable-next-line no-prototype-builtins
     if (typeof decodedToken === 'object' && decodedToken.hasOwnProperty('username')) {
       const username: any = decodedToken.username
 
@@ -95,14 +99,13 @@ export async function redeemOfflineResources (user: any): Promise<void> {
   }
   const timeOfflineConverted: number = parseInt((timeOfflineInSeconds / 3).toFixed(0))
 
-  await Factory.find({ user_id: user._id }).toArray().then((factories) => {
+  await Factory.find({ user_id: user._id }).toArray().then((factories): void => {
     if (factories.length === 0) {
       console.log('No factories')
       return
     }
-    // For each factories print their type
-    factories.forEach((factory) => {
-      types.forEach((type) => {
+    factories.forEach((factory: WithId<Factories>) => {
+      types.forEach((type: string) => {
         // If the type of the factory is the same as the type of the resource
         if (factory.type.toLowerCase() === type) {
           resourcesToGive[type] = resourcesToGive[type] + (factory.production ^ factory.level) * timeOfflineConverted
@@ -111,9 +114,8 @@ export async function redeemOfflineResources (user: any): Promise<void> {
     })
   })
 
-  // Now for each resources we add the amount to the user
   for (const resource in resourcesToGive) {
-    const amount = resourcesToGive[resource]
+    const amount: number = resourcesToGive[resource]
     if (amount > 0) {
       await Users.updateOne({ _id: user._id }, {
         $inc: {

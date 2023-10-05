@@ -5,9 +5,10 @@ import { type User } from '@/types/auth.types'
 import { Users } from '@/db/models/User'
 import { FactoryRessources } from '@/db/models/FactoriesRessources'
 import { checkSuccess } from '@/modules/success/success.services'
+import { type factoriesResources } from '@/types/factoriesRessources.types'
 
 export async function getFactories (): Promise<Factories[] | unknown> {
-  const factories = await Factory?.find().toArray()
+  const factories: Array<WithId<Factories>> = await Factory?.find().toArray()
   if (!factories) {
     return { message: 'No factories found' }
   }
@@ -15,7 +16,7 @@ export async function getFactories (): Promise<Factories[] | unknown> {
 }
 
 export async function getFactoriesByUser (user: string): Promise<Factories | unknown> {
-  const factory = await Factory?.findOne({ user_id: new ObjectId(user) })
+  const factory: WithId<Factories> | null = await Factory?.findOne({ user_id: new ObjectId(user) })
   if (!factory) {
     return { message: 'No factories found' }
   }
@@ -32,24 +33,24 @@ export async function createFactory (user: string, type: string): Promise<unknow
   })
 
   const factories: Array<WithId<Factories>> | null = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
-  const full_user: WithId<User> | null = await Users?.findOne({ _id: new ObjectId(user) })
+  const fullUser: WithId<User> | null = await Users?.findOne({ _id: new ObjectId(user) })
   if (!factories) {
     return { message: 'No factories found' }
   } else {
-    [1, 5, 10].forEach(async (quantity) => {
+    for (const quantity of [1, 5, 10]) {
       if (factories.length >= quantity) {
-        await checkSuccess(full_user, `${quantity}_factories`)
+        await checkSuccess(fullUser, `${quantity}_factories`)
       }
-    })
+    }
 
-    await checkSuccess(full_user, 'factory_1')
+    await checkSuccess(fullUser, 'factory_1')
   }
   return { message: 'Creation Successful' }
 }
 
 export async function upgradeFactory (factoryId: string, user: User): Promise<unknown> {
-  const factory = await Factory.findOne({ _id: new ObjectId(factoryId) })
-  const requiredResources = await FactoryRessources.findOne({ type: factory?.type })
+  const factory: WithId<Factories> | null = await Factory.findOne({ _id: new ObjectId(factoryId) })
+  const requiredResources: WithId<factoriesResources> | null = await FactoryRessources.findOne({ type: factory?.type })
 
   if (!factory || !requiredResources) {
     return { message: requiredResources }
@@ -90,15 +91,15 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     type: factory.type
   }
   if (factory._id) {
-    [5, 10].forEach(async (level) => {
+    for (const level of [5, 10]) {
       if (factory.level + 1 === level) {
         await checkSuccess(user, `factory_${level}`)
       }
-    })
+    }
 
     // Get all the factories different of level 1 and 0
-    const factoriesUpgraded = await Factory.find({ level: { $gt: 1 } }).toArray();
-    let countedLevelUps = 0;
+    const factoriesUpgraded: Array<WithId<Factories>> = await Factory.find({ level: { $gt: 1 } }).toArray()
+    let countedLevelUps: number = 0
 
     for (const factoryUpgraded of factoriesUpgraded) {
       if (factoryUpgraded.level > 1) {
@@ -106,11 +107,11 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
       }
     }
 
-    const levelsToCheck = [1, 5, 10]
+    const levelsToCheck: number[] = [1, 5, 10]
 
     for (const level of levelsToCheck) {
       if (countedLevelUps > level) {
-        await checkSuccess(user, `upgrade_${level}_factories`);
+        await checkSuccess(user, `upgrade_${level}_factories`)
       }
     }
 

@@ -18,9 +18,9 @@ export async function getMarkets (sort: string, type: string | undefined = undef
     return { message: 'No markets found' }
   }
 
-  if (sort === 'Asc') {
+  if (sort === 'asc') {
     markets.sort((a, b) => a.price - b.price)
-  } else if (sort === 'Desc') {
+  } else if (sort === 'desc') {
     markets.sort((a, b) => b.price - a.price)
   }
 

@@ -38,18 +38,6 @@ const openModal = (id: string) => {
 
 <template>
   <div class="flex flex-col">
-    <!--    <div v-for="n in 3">-->
-    <!--      &lt;!&ndash;      <template v-if="n?.type === props.factoryType">&ndash;&gt;-->
-    <!--      <FactoryItem-->
-    <!--        modal-id="wood"-->
-    <!--        :factory-name="factoryName"-->
-    <!--        :factory-level="3"-->
-    <!--        :borderColor="borderColor"-->
-    <!--        :factory-img="factoryImg"-->
-    <!--        :factory-production-img="factoryProductionImg"-->
-    <!--      />-->
-    <!--      &lt;!&ndash;      </template>&ndash;&gt;-->
-    <!--    </div>-->
     <div v-if="factories.factories.length == 0 || false" class="flex flex-col">
       <FactoryItemSkeleton :factory-name="factoryName" />
       <FactoryItemSkeleton :factory-name="factoryName" />
@@ -60,12 +48,10 @@ const openModal = (id: string) => {
       <div v-for="factory in factories?.factories">
         <template v-if="factory?.type === props.factoryType">
           <FactoryItem
-            :modal-id="factory?._id"
             :factory-name="factoryName"
             :factory-level="factory?.level"
             :borderColor="borderColor"
             :factory-img="factoryImg"
-            :factory-production-img="factoryProductionImg"
             @click="openModal(factory?._id)"
           />
         </template>

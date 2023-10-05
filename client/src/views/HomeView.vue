@@ -18,6 +18,7 @@ import WoodFactory from '../../public/factories/wood_factory.png'
 import StoneFactory from '../../public/factories/stone_factory.jpeg'
 import DiamondFactory from '../../public/factories/diamond_factory.jpeg'
 import GoldFactory from '../../public/factories/gold_factory.png'
+import Coin from '../../public/resources/coin.jpeg'
 
 const factories = useFactoriesStore()
 const user = useUserStore()
@@ -226,60 +227,19 @@ function canUpgrade(type: string, actualLevel: number) {
 <template>
   <main @click="handleClick">
     <div>
-      <!--      <Modal :size="'xs'" v-if="isShowModal" @close="closeModal">
-        <template #header>
-          <div class="flex items-center text-lg">Terms of Service</div>
-        </template>
+      <Modal :size="xs" v-if="isShowModal" @close="closeModal">
         <template #body>
-          <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-            With less than a month to go before the European Union enacts new consumer privacy laws
-            for its citizens, companies around the world are updating their terms of service
-            agreements to comply.
-            {{ factoryData }}
-            {{ factoryData?.type }}
-          </p>
-          <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
-            The European Union’s General Data Protection Regulation (G.D.P.R.) goes into effect on
-            May 25 and is meant to ensure a common set of data rights in the European Union. It
-            requires organizations to notify users as soon as possible of high-risk data breaches
-            that could personally affect them.
-          </p>
-        </template>
-        <template #footer>
-          <div class="flex justify-between">
-            <button
-              @click="closeModal"
-              type="button"
-              class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-            >
-              Decline
-            </button>
-            <button
-              @click="closeModal"
-              type="button"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              I accept
-            </button>
-          </div>
-        </template>
-      </Modal>-->
-      <Modal :size="'xs'" v-if="isShowModal" @close="closeModal">
-        <template #header>
-          <div class="flex items-center text-lg">Terms of Service</div>
-        </template>
-        <template #body>
-          <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+          <div class="bg-white rounded-lg dark:bg-gray-700">
             <!-- Modal body -->
-            <div class="p-6 space-y-6">
+            <div class="p-6 space-y-6" style="padding-top: -10px">
               <!-- Close button -->
               <button
+                @click="closeModal"
                 type="button"
                 class="float-right text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
               >
                 <svg
                   class="w-3 h-3"
-                  aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 14 14"
@@ -301,6 +261,7 @@ function canUpgrade(type: string, actualLevel: number) {
                     class="w-32 h-auto border-2 border-solid rounded-lg text-center"
                     :class="borderColor(factoryData?.type)"
                     :src="factoryImage(factoryData?.type)"
+                    alt="factory"
                   />
                 </div>
                 <div class="flex flex-col items-center justify-between h-32">
@@ -322,7 +283,11 @@ function canUpgrade(type: string, actualLevel: number) {
                 <div class="flex flex-col items-center justify-evenly">
                   <div class="flex flex-row items-center justify-evenly">
                     <div class="mr-6 w-fit">
-                      <img class="w-16 h-auto" :src="resourceImage(factoryData?.type)" />
+                      <img
+                        class="w-16 h-auto"
+                        :src="resourceImage(factoryData?.type)"
+                        alt="factory"
+                      />
                     </div>
                     <div class="flex flex-row items-center justify-between h-16">
                       <p>
@@ -343,10 +308,7 @@ function canUpgrade(type: string, actualLevel: number) {
                   </div>
                   <div class="flex flex-row items-center justify-evenly">
                     <div class="mr-6 w-fit">
-                      <img
-                        class="w-16 h-auto"
-                        src="https:cdn.discordapp.com/attachments/1158396116388302910/1159065038368280606/fc270cd6-2a0f-47e5-bc40-bb69456b24a0.jpeg?ex=651e86ef&is=651d356f&hm=d464cda1e6ea466bd90ae775680af138bd63bf1cc348642964d512d48c3f6832&"
-                      />
+                      <img class="w-16 h-auto" :src="Coin" alt="coin" />
                     </div>
                     <div class="flex flex-row items-center justify-between h-16">
                       <p>
@@ -413,24 +375,6 @@ function canUpgrade(type: string, actualLevel: number) {
                 <div data-popper-arrow></div>
               </div>
             </div>
-          </div>
-        </template>
-        <template #footer>
-          <div class="flex justify-between">
-            <button
-              @click="closeModal"
-              type="button"
-              class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
-            >
-              Decline
-            </button>
-            <button
-              @click="closeModal"
-              type="button"
-              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-            >
-              I accept
-            </button>
           </div>
         </template>
       </Modal>

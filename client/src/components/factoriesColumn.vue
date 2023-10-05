@@ -20,7 +20,7 @@ let notOwnedFactories = ref(0)
 if (userConnected.user.length == 0) {
   console.log('fetching user')
   userConnected.fetchUser().then(() => {
-    factories.fetchFactory(userConnected.user._id).then(() => {
+    factories.fetchFactory().then(() => {
       factories.factories.forEach((factory) => {
         if (factory.type == props.factoryType) {
           notOwnedFactories.value++

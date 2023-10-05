@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import type { FactoriesInterface, FactoryModalInterface } from '@/types/factories.interface'
+import axios from 'axios'
+import router from '@/router'
 
 interface FactoriesState {
   factories: FactoriesInterface[]
@@ -31,8 +33,18 @@ export const useFactoriesStore = defineStore('factories', {
       console.log(data)
       this.factories = data
     },
-    async fetchFactory(id: string) {
-      const data = await fetch(`http://localhost:3001/factories/${id}`).then((res) => res.json())
+    async fetchFactory() {
+      // get token in cookie
+      const token: string | undefined = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        .split('=')[1]
+      if (!token) {
+        await router.push('/login')
+      }
+      const data = await axios
+        .get(`http://localhost:3001/factories/user?token=${token}`)
+        .then((res) => res.data)
       console.log(data)
       this.factories = data
     },

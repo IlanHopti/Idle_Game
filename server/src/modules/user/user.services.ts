@@ -93,7 +93,7 @@ export async function redeemOfflineResources (user: any): Promise<void> {
   if (timeOfflineInSeconds < 3) {
     return
   }
-  const timeOfflineConverted = timeOfflineInSeconds / 3
+  const timeOfflineConverted: number = parseInt((timeOfflineInSeconds / 3).toFixed(0))
 
   await Factory.find({ user_id: user._id }).toArray().then((factories) => {
     if (factories.length === 0) {

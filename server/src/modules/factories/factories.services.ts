@@ -51,11 +51,10 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     return { message: requiredResources }
   }
   if (factory.level === 10) {
-    return { message: 'Your factory is max level' }
+    return { message: 'Your factory is at max level' }
   }
-
-  if (user._id != factory.user_id) {
-    return { message: 'This isnt your factory' }
+  if (factory.user_id.toString() !== user._id?.toString()) {
+    return { message: 'This is not your factory' }
   }
   const userResources = user.resources
   if (!userResources) {
@@ -76,7 +75,7 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
   }
 
   if ((!user.money || user.money) && user.money < requiredResources.resources[factory.level].money) {
-    return { message: 'You dont have enough money to upgrade' }
+    return { message: 'You do not have enough money to upgrade' }
   }
 
   const newFactory = {
@@ -116,8 +115,8 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
         resources: userResources
       }
     })
-    return { message: 'You have upgraded successfully' }
+    return { message: `You have upgraded successfully your factory to level ${factory.level + 1}` }
   }
 
-  return { message: 'Wrong Factory' }
+  return { message: 'An error has occurred' }
 }

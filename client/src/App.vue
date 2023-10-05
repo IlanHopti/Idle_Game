@@ -37,7 +37,6 @@
 </template>
 
 <script setup lang="ts">
-import Navbar from './components/navbar.vue'
 import { useUserStore } from '@/stores/user'
 import { ref, onMounted, onErrorCaptured, watch } from 'vue'
 import ResourcesComponent from '@/components/ResourcesComponent.vue'

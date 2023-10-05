@@ -2,9 +2,13 @@ import type { Express, Request, Response } from 'express'
 import { cancelOrder, confirmOffer, createOffer, getMarkets, getOneOffer } from './market.services'
 
 export function marketRoutes (app: Express): void {
-  app.get('/market', async (_req: Request, res: Response) => {
+  app.get('/market', async (req: Request, res: Response) => {
     try {
-      const result = await getMarkets()
+      const { sort, type } = req.query
+      if (typeof sort !== 'string' || typeof type !== 'string') {
+        throw new Error('Le paramètre de tri doit être une chaîne de caractères.')
+      }
+      const result = await getMarkets(sort, type)
       res.json(result)
     } catch (error) {
       res.status(500).json({ error })

@@ -274,105 +274,113 @@ function canUpgrade(type: string, actualLevel: number) {
                   </p>
                 </div>
               </div>
-
-              <!-- Divider -->
-              <div class="w-full border-t-2 border-dashed border-black"></div>
-
-              <!-- Units for upgrade -->
-              <div class="flex flex-row items-center justify-evenly mt-4 mb-4">
-                <div class="flex flex-col items-center justify-evenly">
-                  <div class="flex flex-row items-center justify-evenly">
-                    <div class="mr-6 w-fit">
-                      <img
-                        class="w-16 h-auto"
-                        :src="resourceImage(factoryData?.type)"
-                        alt="factory"
-                      />
-                    </div>
-                    <div class="flex flex-row items-center justify-between h-16">
-                      <p>
-                        <span
-                          class="font-bold"
-                          :class="
-                            actualResource(factoryData?.type) <
-                            resourcesNeededForUpgrade(factoryData?.type, factoryData?.level)
-                              ? `text-red-700`
-                              : `text-green-700`
-                          "
-                        >
-                          {{ actualResource(factoryData?.type) }}
-                        </span>
-                        / {{ resourcesNeededForUpgrade(factoryData?.type, factoryData?.level) }}
-                      </p>
-                    </div>
-                  </div>
-                  <div class="flex flex-row items-center justify-evenly">
-                    <div class="mr-6 w-fit">
-                      <img class="w-16 h-auto" :src="Coin" alt="coin" />
-                    </div>
-                    <div class="flex flex-row items-center justify-between h-16">
-                      <p>
-                        <span
-                          class="font-bold"
-                          :class="
-                            user.user.money <
-                            coinNeededForUpgrade(factoryData?.type, factoryData?.level)
-                              ? `text-red-700`
-                              : `text-green-700`
-                          "
-                        >
-                          {{ user.user.money }}
-                        </span>
-                        / {{ coinNeededForUpgrade(factoryData?.type, factoryData?.level) }}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Divider -->
-              <div class="w-full border-t-2 border-dashed border-black"></div>
-
-              <!-- Indication for next level -->
-              <div class="flex flex-col items-center justify-evenly mt-4 mb-4">
-                <h2 class="text-xl font-bold">Level {{ factoryData?.level + 1 }} :</h2>
-                <div>
-                  <p class="flex flex-row items-center justify-between text-md font-bold">
-                    {{ factoryData?.production * (factoryData?.level + 1) }}
-                    <img class="w-6 h-auto ml-2" :src="resourceImage(factoryData?.type)" />
-                    / h
-                  </p>
-                </div>
-              </div>
-              <button
-                :data-popover-target="
-                  !canUpgrade(factoryData?.type, factoryData?.level) ? `popover-default` : ``
-                "
-                type="button"
-                class="w-full px-4 py-2 text-base font-medium text-center text-white transition duration-200 ease-in bg-green-700 rounded-lg shadow-md hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                :class="
-                  !canUpgrade(factoryData?.type, factoryData?.level)
-                    ? `cursor-not-allowed bg-red-700 hover:bg-red-900 focus:ring-red-500`
-                    : ``
-                "
-              >
-                Upgrade
-              </button>
-
+              <!--  if the factory is max level -->
               <div
-                data-popover
-                id="popover-default"
-                role="tooltip"
-                class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+                v-if="factoryData?.level >= 10"
+                class="flex items-center text-center justify-center pt-4"
               >
-                <div
-                  class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700"
-                >
-                  <h3 class="font-semibold text-red-900 dark:text-white">
-                    You don't have enough resources
-                  </h3>
+                Your factory is at MAX level !
+              </div>
+              <div v-else>
+                <!-- Divider -->
+                <div class="w-full border-t-2 border-dashed border-black"></div>
+
+                <!-- Units for upgrade -->
+                <div class="flex flex-row items-center justify-evenly mt-4 mb-4">
+                  <div class="flex flex-col items-center justify-evenly">
+                    <div class="flex flex-row items-center justify-evenly">
+                      <div class="mr-6 w-fit">
+                        <img
+                          class="w-16 h-auto"
+                          :src="resourceImage(factoryData?.type)"
+                          alt="factory"
+                        />
+                      </div>
+                      <div class="flex flex-row items-center justify-between h-16">
+                        <p>
+                          <span
+                            class="font-bold"
+                            :class="
+                              actualResource(factoryData?.type) <
+                              resourcesNeededForUpgrade(factoryData?.type, factoryData?.level)
+                                ? `text-red-700`
+                                : `text-green-700`
+                            "
+                          >
+                            {{ actualResource(factoryData?.type) }}
+                          </span>
+                          / {{ resourcesNeededForUpgrade(factoryData?.type, factoryData?.level) }}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="flex flex-row items-center justify-evenly">
+                      <div class="mr-6 w-fit">
+                        <img class="w-16 h-auto" :src="Coin" alt="coin" />
+                      </div>
+                      <div class="flex flex-row items-center justify-between h-16">
+                        <p>
+                          <span
+                            class="font-bold"
+                            :class="
+                              user.user.money <
+                              coinNeededForUpgrade(factoryData?.type, factoryData?.level)
+                                ? `text-red-700`
+                                : `text-green-700`
+                            "
+                          >
+                            {{ user.user.money }}
+                          </span>
+                          / {{ coinNeededForUpgrade(factoryData?.type, factoryData?.level) }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
-                <div data-popper-arrow></div>
+
+                <!-- Divider -->
+                <div class="w-full border-t-2 border-dashed border-black"></div>
+
+                <!-- Indication for next level -->
+                <div class="flex flex-col items-center justify-evenly mt-4 mb-4">
+                  <h2 class="text-xl font-bold">Level {{ factoryData?.level + 1 }} :</h2>
+                  <div>
+                    <p class="flex flex-row items-center justify-between text-md font-bold">
+                      {{ factoryData?.production * (factoryData?.level + 1) }}
+                      <img class="w-6 h-auto ml-2" :src="resourceImage(factoryData?.type)" />
+                      / h
+                    </p>
+                  </div>
+                </div>
+                <button
+                  :data-popover-target="
+                    !canUpgrade(factoryData?.type, factoryData?.level) ? `popover-default` : ``
+                  "
+                  type="button"
+                  class="w-full px-4 py-2 text-base font-medium text-center text-white transition duration-200 ease-in bg-green-700 rounded-lg shadow-md hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                  :class="
+                    !canUpgrade(factoryData?.type, factoryData?.level)
+                      ? `cursor-not-allowed bg-red-700 hover:bg-red-900 focus:ring-red-500`
+                      : ``
+                  "
+                >
+                  Upgrade
+                </button>
+
+                <div
+                  data-popover
+                  id="popover-default"
+                  role="tooltip"
+                  class="absolute z-10 invisible inline-block w-64 text-sm text-gray-500 transition-opacity duration-300 bg-white border border-gray-200 rounded-lg shadow-sm opacity-0 dark:text-gray-400 dark:border-gray-600 dark:bg-gray-800"
+                >
+                  <div
+                    class="px-3 py-2 bg-gray-100 border-b border-gray-200 rounded-t-lg dark:border-gray-600 dark:bg-gray-700"
+                  >
+                    <h3 class="font-semibold text-red-900 dark:text-white">
+                      You don't have enough resources
+                    </h3>
+                  </div>
+                  <div data-popper-arrow></div>
+                </div>
               </div>
             </div>
           </div>

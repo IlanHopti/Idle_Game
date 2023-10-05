@@ -37,7 +37,7 @@ export async function register (body: AuthRegisterBody): Promise<{ success: bool
     email: body.email,
     username: body.username,
     password: hashedPassword,
-    ressources: {
+    resources: {
       wood: 0,
       coal: 0,
       stone: 0,

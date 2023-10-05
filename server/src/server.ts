@@ -5,6 +5,7 @@ import { registerAuthRoutes } from './modules/auth/auth.controller'
 import { isLogin } from './modules/auth/auth.middleware'
 import { factoriesRoutes } from './modules/factories/factories.controller'
 import { userRoutes } from '@/modules/user/user.controller'
+import { marketRoutes } from './modules/market/market.controller'
 import * as process from 'process'
 
 export function initWebServer (): express.Express {
@@ -30,7 +31,7 @@ export function initWebServer (): express.Express {
   registerAuthRoutes(app)
   userRoutes(app)
   factoriesRoutes(app)
-
+  marketRoutes(app)
 
   // On ecoute sur le port configuré avec le .env
   app.listen(process.env.NODE_PORT, () => {

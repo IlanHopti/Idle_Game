@@ -7,6 +7,7 @@ import { factoriesRoutes } from './modules/factories/factories.controller'
 import { userRoutes } from '@/modules/user/user.controller'
 import { marketRoutes } from './modules/market/market.controller'
 import * as process from 'process'
+import { achievementsRoutes } from '@/modules/success/success.controller'
 
 export function initWebServer (): express.Express {
   // Creation du serveur http
@@ -31,6 +32,7 @@ export function initWebServer (): express.Express {
   registerAuthRoutes(app)
   userRoutes(app)
   factoriesRoutes(app)
+  achievementsRoutes(app)
   marketRoutes(app)
 
   // On ecoute sur le port configuré avec le .env

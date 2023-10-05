@@ -3,7 +3,7 @@ import { Transaction } from '@/db/models/Transactions'
 import { Users } from '@/db/models/User'
 import { type User } from '@/types/auth.types'
 import type { Market, creationOffer, fastSell } from '@/types/market.types'
-import { ObjectId } from 'mongodb'
+import { type InsertOneResult, ObjectId, type WithId } from 'mongodb'
 
 export async function getMarkets (sort: string, type: string | undefined = undefined): Promise<Market[] | unknown> {
   console.log(sort)
@@ -29,7 +29,7 @@ export async function getMarkets (sort: string, type: string | undefined = undef
 }
 
 export async function getOneOffer (offerId: string): Promise<Market | unknown> {
-  const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
+  const offer: WithId<Market> | null = await Markets.findOne({ _id: new ObjectId(offerId) })
   if (!offer) {
     return { message: 'No offers found' }
   }
@@ -49,7 +49,7 @@ export async function createOffer (offer: creationOffer): Promise<unknown> {
     return { message: 'Please select a valid resource' }
   }
 
-  const offers = await Markets.insertOne({
+  const offers: InsertOneResult<Market> = await Markets.insertOne({
     price: offer.price,
     quantity: offer.quantity,
     seller_id: new ObjectId(offer.seller_id),
@@ -66,8 +66,8 @@ export async function createOffer (offer: creationOffer): Promise<unknown> {
 }
 
 export async function confirmOffer (offerId: string, buyerId: string): Promise<unknown> {
-  const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
-  const buyer = await Users.findOne({ _id: new ObjectId(buyerId) })
+  const offer: WithId<Market> | null = await Markets.findOne({ _id: new ObjectId(offerId) })
+  const buyer: WithId<User> | null = await Users.findOne({ _id: new ObjectId(buyerId) })
   if (!offer || !buyer) {
     return { message: 'Offer is not found' }
   }
@@ -75,7 +75,7 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
   if (offer.seller_id.toString() === buyerId) {
     return { message: 'You cannot buy your own offer' }
   }
-  const seller = await Users.findOne({ _id: new ObjectId(offer.seller_id) })
+  const seller: WithId<User> | null = await Users.findOne({ _id: new ObjectId(offer.seller_id) })
   if (!seller) {
     return { message: 'Seller not found' }
   }
@@ -87,7 +87,7 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
   if (offer.status === 'Canceled') {
     return { message: 'You cannot buy an offer that has been canceled' }
   }
-  const resourceType = offer.resource.toLowerCase()
+  const resourceType: string = offer.resource.toLowerCase()
   const buyerResource = buyer.resources
   const sellerResource = seller.resources
   if (!resourceType || !buyerResource || !sellerResource) {
@@ -123,8 +123,6 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
 
 export async function cancelOrder (offerId: string, userId: ObjectId): Promise<unknown> {
   const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
-  // eslint-disable-next-line eqeqeq
-  console.log(offer?.seller_id, userId)
   if (!offer || offer.seller_id.toString() !== userId.toString()) {
     return { mesage: 'User is not authorised to cancel this order' }
   }

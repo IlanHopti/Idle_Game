@@ -43,8 +43,7 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
   if (factory.level === 10) {
     return { message: 'Your factory is max level' }
   }
-
-  if (user._id != factory.user_id) {
+  if (factory.user_id.toString() !== user._id?.toString()) {
     return { message: 'This isnt your factory' }
   }
   const userResources = user.resources

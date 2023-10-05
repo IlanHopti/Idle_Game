@@ -14,6 +14,10 @@ export function userRoutes (app: Express) {
       return
     }
     const user = await getUser(token)
+    if (!user) {
+      res.status(401).json({ message: 'Unauthorized' })
+      return
+    }
     const result = await redeemResources(user)
 
     res.json(result)
@@ -25,6 +29,10 @@ export function userRoutes (app: Express) {
       return
     }
     const user = await getUser(token)
+    if (!user) {
+      res.status(401).json({ message: 'Unauthorized' })
+      return
+    }
     const result = await redeemOfflineResources(user)
 
     res.json(result)

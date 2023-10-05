@@ -34,8 +34,8 @@ export async function createFactory (user: string, type: string): Promise<unknow
 }
 
 export async function upgradeFactory (factoryId: string, user: User): Promise<unknown> {
-  const factory = await Factory?.findOne({ _id: new ObjectId(factoryId) })
-  const requiredResources = await FactoryRessources?.findOne({ type: factory?.type })
+  const factory = await Factory.findOne({ _id: new ObjectId(factoryId) })
+  const requiredResources = await FactoryRessources.findOne({ type: factory?.type })
 
   if (!factory || !requiredResources) {
     return { message: 'Factory not found' }
@@ -44,7 +44,7 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     return { message: 'Your factory is max level' }
   }
 
-  if (new ObjectId(user._id) !== new ObjectId(factory.user_id)) {
+  if (user._id != factory.user_id) {
     return { message: 'This isnt your factory' }
   }
   const userResources = user.resources

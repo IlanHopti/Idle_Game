@@ -97,7 +97,17 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
   return { message: 'Successfully bought the offer !' }
 }
 
-export async function cancelOrder (offerId: string): Promise<unknown> {
-  await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Cancelled' } })
+export async function cancelOrder (offerId: string, userId: ObjectId): Promise<unknown> {
+  const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
+  // eslint-disable-next-line eqeqeq
+  if (!offer || offer.seller_id != userId) {
+    return { mesage: 'User is not authorised to cancel this order' }
+  }
+
+  if (offer.status === 'Canceled') {
+    return { message: 'The offer is already canceled' }
+  }
+
+  await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Canceled' } })
   return { message: 'Successfully canceled the offer' }
 }

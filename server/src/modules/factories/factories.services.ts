@@ -38,7 +38,7 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
   const requiredResources = await FactoryRessources.findOne({ type: factory?.type })
 
   if (!factory || !requiredResources) {
-    return { message: 'Factory not found' }
+    return { message: requiredResources }
   }
   if (factory.level === 10) {
     return { message: 'Your factory is max level' }

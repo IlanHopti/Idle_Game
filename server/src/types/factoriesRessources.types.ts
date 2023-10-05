@@ -1,9 +1,9 @@
-export interface factoriesRessources {
-  resources: RessourcesList[]
+export interface factoriesResources {
+  resources: ResourcesList[]
   type: string
 }
 
-export interface RessourcesList {
+export interface ResourcesList {
   wood: number
   money: number
   coal: number

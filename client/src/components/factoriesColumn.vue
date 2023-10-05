@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import FactoryItem from '../components/factoryItem.vue'
 import FactoryItemSkeleton from '../components/factoryItemSkeleton.vue'
 import { useUserStore } from '@/stores/user'
@@ -17,8 +17,7 @@ const userConnected = useUserStore()
 const factories = useFactoriesStore()
 let notOwnedFactories = ref(0)
 
-if (userConnected.user.length == 0) {
-  console.log('fetching user')
+onMounted(() => {
   userConnected.fetchUser().then(() => {
     factories.fetchFactory().then(() => {
       factories.factories.forEach((factory) => {
@@ -28,7 +27,8 @@ if (userConnected.user.length == 0) {
       })
     })
   })
-}
+})
+
 const emit = defineEmits(['showModal'])
 
 const openModal = (id: string) => {

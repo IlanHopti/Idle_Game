@@ -96,3 +96,8 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
 
   return { message: 'Successfully bought the offer !' }
 }
+
+export async function cancelOrder (offerId: string): Promise<unknown> {
+  await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Cancelled' } })
+  return { message: 'Successfully canceled the offer' }
+}

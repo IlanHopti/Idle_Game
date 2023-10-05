@@ -16,3 +16,9 @@ export interface creationOffer {
   resource: string
   seller_id: ObjectId
 }
+
+export interface fastSell {
+  quantity: number
+  resource: string
+  seller_id: ObjectId
+}

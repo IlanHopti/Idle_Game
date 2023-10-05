@@ -1,31 +1,28 @@
 import { Factory } from '@/db/models/Factories'
+import { type Factories } from '@/types/factories.types'
 import { ObjectId } from 'mongodb'
 import { type User } from '@/types/auth.types'
 import { Users } from '@/db/models/User'
 import { FactoryRessources } from '@/db/models/FactoriesRessources'
 
-export async function getFactories () {
-  try {
-    const factories = await Factory.find().toArray()
-    return factories
-  } catch (error) {
-    console.error(error)
-    throw error
+export async function getFactories (): Promise<Factories[] | unknown> {
+  const factories = await Factory?.find().toArray()
+  if (!factories) {
+    return { message: 'No factories found' }
   }
+  return factories
 }
 
-export async function getFactoriesByUser (user: string) {
-  try {
-    const factory = await Factory.findOne({ user_id: new ObjectId(user) })
-    return factory
-  } catch (error) {
-    console.error(error)
-    throw error
+export async function getFactoriesByUser (user: string): Promise<Factories | unknown> {
+  const factory = await Factory?.findOne({ user_id: new ObjectId(user) })
+  if (!factory) {
+    return { message: 'No factories found' }
   }
+  return factory
 }
 
-export async function createFactory (user: string, type: string) {
-  const newFactory = await Factory.insertOne({
+export async function createFactory (user: string, type: string): Promise<unknown> {
+  await Factory?.insertOne({
     level: 1,
     cost: 100,
     production: 0.25,
@@ -33,12 +30,12 @@ export async function createFactory (user: string, type: string) {
     user_id: new ObjectId(user)
   })
 
-  return newFactory
+  return { message: 'Creation Successful' }
 }
 
-export async function upgradeFactory (factory_id: string, user: User) {
-  const factory = await Factory.findOne({ _id: new ObjectId(factory_id) })
-  const requiredResources = await FactoryRessources?.findOne({ type: factory?.type })
+export async function upgradeFactory (factoryId: string, user: User): Promise<unknown> {
+  const factory = await Factory.findOne({ _id: new ObjectId(factoryId) })
+  const requiredResources = await FactoryRessources.findOne({ type: factory?.type })
 
   if (!factory || !requiredResources) {
     return { message: 'Factory not found' }
@@ -54,7 +51,7 @@ export async function upgradeFactory (factory_id: string, user: User) {
   if (!userResources) {
     return { message: userResources }
   }
-  const requiredLevelResources = requiredResources.ressources[factory.level]
+  const requiredLevelResources = requiredResources.resources[factory.level]
 
   for (const resourceType in requiredLevelResources) {
     const requiredAmount = requiredLevelResources[resourceType]
@@ -68,7 +65,7 @@ export async function upgradeFactory (factory_id: string, user: User) {
     }
   }
 
-  if (!user.money || user.money && user.money < requiredResources.ressources[factory.level].money) {
+  if ((!user.money || user.money) && user.money < requiredResources.resources[factory.level].money) {
     return { message: 'You dont have enough money to upgrade' }
   }
 
@@ -80,8 +77,8 @@ export async function upgradeFactory (factory_id: string, user: User) {
     type: factory.type
   }
   if (factory._id) {
-    Factory.updateOne({ _id: new ObjectId(factory._id) }, { $set: newFactory })
-    Users.updateOne({ _id: new ObjectId(user._id) }, {
+    await Factory?.updateOne({ _id: new ObjectId(factory._id) }, { $set: newFactory })
+    await Users?.updateOne({ _id: new ObjectId(user._id) }, {
       $set: {
         money: user.money - factory.cost,
         ressources: userResources

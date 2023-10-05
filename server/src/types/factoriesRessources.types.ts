@@ -1,5 +1,5 @@
 export interface factoriesRessources {
-  ressources: RessourcesList[]
+  resources: RessourcesList[]
   type: string
 }
 

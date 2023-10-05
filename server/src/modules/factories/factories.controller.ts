@@ -1,7 +1,7 @@
 import { type Express, type Request, type Response } from 'express'
 import { createFactory, getFactories, getFactoriesByUser, upgradeFactory } from './factories.services'
 
-export function factoriesRoutes (app: Express) {
+export function factoriesRoutes (app: Express): void {
   app.get('/factories', async (_req: Request, res: Response) => {
     try {
       const result = await getFactories()

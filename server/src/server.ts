@@ -8,6 +8,7 @@ import { userRoutes } from '@/modules/user/user.controller'
 import { marketRoutes } from './modules/market/market.controller'
 import * as process from 'process'
 import { achievementsRoutes } from '@/modules/success/success.controller'
+import { transactionsRoutes } from './modules/auth/transactions/transactions.controller'
 
 export function initWebServer (): express.Express {
   // Creation du serveur http
@@ -34,6 +35,7 @@ export function initWebServer (): express.Express {
   factoriesRoutes(app)
   achievementsRoutes(app)
   marketRoutes(app)
+  transactionsRoutes(app)
 
   // On ecoute sur le port configuré avec le .env
   app.listen(process.env.NODE_PORT, () => {

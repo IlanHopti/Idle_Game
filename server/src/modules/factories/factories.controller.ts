@@ -1,6 +1,6 @@
 import { type Express, type Request, type Response } from 'express'
 import { createFactory, getFactories, getFactoriesByUser, upgradeFactory } from './factories.services'
-import {getUser} from "@/modules/user/user.services";
+import { getUser } from '@/modules/user/user.services'
 
 export function factoriesRoutes (app: Express): void {
   app.get('/factories', async (_req: Request, res: Response) => {

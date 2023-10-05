@@ -1,6 +1,6 @@
 import { Factory } from '@/db/models/Factories'
 import { type Factories } from '@/types/factories.types'
-import { ObjectId } from 'mongodb'
+import { ObjectId, type WithId } from 'mongodb'
 import { type User } from '@/types/auth.types'
 import { Users } from '@/db/models/User'
 import { FactoryRessources } from '@/db/models/FactoriesRessources'
@@ -31,14 +31,18 @@ export async function createFactory (user: string, type: string): Promise<unknow
     user_id: new ObjectId(user)
   })
 
-  const factories = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
-
+  const factories: Array<WithId<Factories>> | null = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
+  const full_user: WithId<User> | null = await Users?.findOne({ _id: new ObjectId(user) })
   if (!factories) {
     return { message: 'No factories found' }
   } else {
     [1, 5, 10].forEach(async (quantity) => {
-      await checkSuccess(user, `${quantity}_factories`)
+      if (factories.length >= quantity) {
+        await checkSuccess(full_user, `${quantity}_factories`)
+      }
     })
+
+    await checkSuccess(full_user, '1_factory')
   }
   return { message: 'Creation Successful' }
 }
@@ -86,8 +90,8 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     type: factory.type
   }
   if (factory._id) {
-    [1, 5, 10].forEach(async (level) => {
-      if (factory.level === level) {
+    [5, 10].forEach(async (level) => {
+      if (factory.level + 1 === level) {
         await checkSuccess(user, `factory_${level}`)
       }
     })

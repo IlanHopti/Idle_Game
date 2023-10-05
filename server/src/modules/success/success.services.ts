@@ -28,9 +28,8 @@ export async function checkSuccess (user: any, tag: string): Promise<void> {
     return
   }
 
-  if (!user.achievements) {
-    user.achievements = []
-  }
+  user.achievements = user.achievements || []
+
   const successId = new ObjectId(success._id)
 
   if (!user.achievements.some((achievement: any) => achievement.equals(successId))) {

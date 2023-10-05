@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref, watchEffect } from 'vue'
+import { onErrorCaptured, ref, watch, watchEffect } from 'vue'
+import { useUserStore } from '@/stores/user'
+import router from '@/router'
+import { onMounted } from 'vue'
 
 // props declaration
 const props = defineProps<{
@@ -10,15 +13,48 @@ const props = defineProps<{
   factoryLevelMax: number
   factoryProduction: number
   factoryProductionImg: string
-  unitsNeededForUpgrade: { wood: number; coin: number }
+  unitsNeededForUpgrade: {
+    wood: number
+    coal: number
+    coin: number
+    stone: number
+    iron: number
+    gold: number
+    diamond: number
+  }
   borderColor: string
 }>()
 
 console.log(props.factoryName)
 
-const myUnits = ref({ wood: 0, coin: 20 })
+const myUnits = ref({ wood: 0, coal: 0, coin: 0, stone: 0, iron: 0, gold: 0, diamond: 0 })
 
+const userConnected = useUserStore()
+userConnected.fetchUser().then(() => {
+  if (!userConnected.isLogged) {
+    router.push('/login')
+    return
+  }
+  myUnits.value = userConnected.user.resources
+  myUnits.value.coin = userConnected.user.money
+})
+// myUnits.value = userConnected.user.resources
 const canUpgrade = ref(false)
+
+onMounted(() => {
+  const unwatchIsLogged = watch(
+    () => userConnected.isLogged,
+    (newValue) => {
+      if (!newValue) {
+        router.push('/login')
+      }
+    }
+  )
+
+  onErrorCaptured(() => {
+    unwatchIsLogged()
+  })
+})
 
 watchEffect(() => {
   if (myUnits.value.wood >= props.unitsNeededForUpgrade.wood) {

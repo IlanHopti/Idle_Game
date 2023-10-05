@@ -1,9 +1,16 @@
 <script setup lang="ts">
 import FactoryColumn from '../components/factoriesColumn.vue'
+import { useUserStore } from '@/stores/user'
+
+const handleClick = (e: Event) => {
+  if (useUserStore().user.length !== 0) {
+    useUserStore().redeemResources()
+  }
+}
 </script>
 
 <template>
-  <main>
+  <main @click="handleClick">
     <div class="grid grid-cols-3 gap-3 p-10">
       <!-- Wood -->
       <FactoryColumn

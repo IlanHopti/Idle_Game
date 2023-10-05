@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import MarketplaceView from '@/views/MarketplaceView.vue'
 import RegisterView from '@/views/RegisterView.vue'
 import LoginView from '@/views/LoginView.vue'
 
@@ -15,6 +16,11 @@ const router = createRouter({
     //   path: '/about',
     //   name: 'about',
     // }
+    {
+      path: '/marketplace',
+      name: 'marketplace',
+      component: () => MarketplaceView
+    },
     {
       path: '/register',
       name: 'register',

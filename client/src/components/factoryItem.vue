@@ -14,19 +14,21 @@ const props = defineProps<{
   factoryImg: string
   factoryProductionImg: string
 }>()
+
+// console.log('modalId item: ' + props.modalId)
 </script>
 
 <template>
   <div>
     <!-- Main modal -->
     <div
-      :id="modalId"
+      :id="props.modalId"
       tabindex="-1"
       aria-hidden="true"
       class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
     >
       <FactoryModal
-        :modal-id="modalId"
+        :modal-id="props.modalId"
         :factory-img="props.factoryImg"
         :factory-name="props.factoryName"
         :factory-level="props.factoryLevel"
@@ -39,8 +41,8 @@ const props = defineProps<{
     </div>
 
     <div
-      :data-modal-target="modalId"
-      :data-modal-toggle="modalId"
+      :data-modal-target="props.modalId"
+      :data-modal-toggle="props.modalId"
       class="w-full border-2 border-solid rounded-3xl p-6 mt-6 mb-6 text-center flex flex-row items-center justify-start"
       :class="borderColor"
     >

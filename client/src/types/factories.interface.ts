@@ -5,4 +5,5 @@ export interface FactoriesInterface {
   cost: number
   production: number
   type: string
+  aaaa: string
 }

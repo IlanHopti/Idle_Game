@@ -8,8 +8,6 @@ import FactoryColumn from '../components/factoriesColumn.vue'
       <!-- Wood -->
       <FactoryColumn
         factoryName="Wood Factory"
-        modalId="woodFactory"
-        :factoryLevel="1"
         borderColor="border-wood"
         factoryImg="../../public/factories/wood_factory.png"
         factoryProductionImg="../../public/resources/wood.png"
@@ -19,8 +17,6 @@ import FactoryColumn from '../components/factoriesColumn.vue'
       <!-- Coal -->
       <FactoryColumn
         factoryName="Coal Factory"
-        modalId="coalFactory"
-        :factoryLevel="1"
         borderColor="border-coal"
         factoryImg="../../public/factories/coal_factory.jpeg"
         factoryProductionImg="../../public/resources/coal.png"
@@ -30,8 +26,6 @@ import FactoryColumn from '../components/factoriesColumn.vue'
       <!-- Stone -->
       <FactoryColumn
         factoryName="Stone Factory"
-        modalId="stoneFactory"
-        :factoryLevel="1"
         borderColor="border-stone"
         factoryImg="../../public/factories/stone_factory.jpeg"
         factoryProductionImg="../../public/resources/stone.png"
@@ -45,8 +39,6 @@ import FactoryColumn from '../components/factoriesColumn.vue'
       <!-- Iron -->
       <FactoryColumn
         factoryName="Iron Factory"
-        modalId="ironFactory"
-        :factoryLevel="1"
         borderColor="border-iron"
         factoryImg="../../public/factories/iron_factory.png"
         factoryProductionImg="../../public/resources/iron_ingot.png"
@@ -56,8 +48,6 @@ import FactoryColumn from '../components/factoriesColumn.vue'
       <!-- Gold -->
       <FactoryColumn
         factoryName="Gold Factory"
-        modalId="goldFactory"
-        :factoryLevel="1"
         borderColor="border-gold"
         factoryImg="../../public/factories/gold_factory.png"
         factoryProductionImg="../../public/resources/gold_ingot.png"
@@ -67,8 +57,6 @@ import FactoryColumn from '../components/factoriesColumn.vue'
       <!-- Diamond -->
       <FactoryColumn
         factoryName="Diamond Factory"
-        modalId="diamondFactory"
-        :factoryLevel="1"
         borderColor="border-diamond"
         factoryImg="../../public/factories/diamond_factory.jpeg"
         factoryProductionImg="../../public/resources/diamond.png"

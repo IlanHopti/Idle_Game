@@ -29,7 +29,7 @@ export function marketRoutes (app: Express): void {
 
   app.post('/market', async (req: Request, res: Response) => {
     try {
-      const result = await createOffer(req.body.article)
+      const result = await createOffer(req.body.offer)
       res.json(result)
     } catch (error) {
       res.status(500).json({ error })

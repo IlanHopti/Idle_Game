@@ -37,13 +37,14 @@ export async function getOneOffer (offerId: string): Promise<Market | unknown> {
 }
 
 export async function createOffer (offer: creationOffer): Promise<unknown> {
-  if (offer.quantity < 0 || !offer.quantity) {
+  if (offer.quantity <= 0 || !offer.quantity) {
     return { message: 'Please select a quantity' }
   }
 
-  if (offer.price < 0 || !offer.price) {
+  if (offer.price <= 0 || !offer.price) {
     return { message: 'Please select a price' }
   }
+
 
   if (offer.resource !== 'Wood' && offer.resource !== 'Coal' && offer.resource !== 'Stone' && offer.resource !== 'Iron' && offer.resource !== 'Gold' && offer.resource !== 'Diamond') {
     return { message: 'Please select a valid resource' }
@@ -56,6 +57,13 @@ export async function createOffer (offer: creationOffer): Promise<unknown> {
     resource: offer.resource,
     status: 'Pending',
     date: new Date()
+  })
+
+  // Change resources of seller
+  await Users.updateOne({ _id: new ObjectId(offer.seller_id) }, {
+    $inc: {
+      [`resources.${offer.resource.toLowerCase()}`]: -offer.quantity
+    }
   })
 
   if (offers) {
@@ -89,12 +97,10 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
   }
   const resourceType: string = offer.resource.toLowerCase()
   const buyerResource = buyer.resources
-  const sellerResource = seller.resources
-  if (!resourceType || !buyerResource || !sellerResource) {
+  if (!resourceType || !buyerResource) {
     return { message: 'An error has occurred' }
   }
   buyerResource[resourceType] += offer.quantity
-  sellerResource[resourceType] -= offer.quantity
   await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Confirmed' } })
   await Transaction.insertOne({
     seller_id: new ObjectId(offer.seller_id),
@@ -109,12 +115,6 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
     $set: {
       money: buyer.money - offer.price,
       resources: buyerResource
-    }
-  })
-  await Users.updateOne({ _id: new ObjectId(buyerId) }, {
-    $set: {
-      money: seller.money + offer.price,
-      resources: sellerResource
     }
   })
 
@@ -132,6 +132,20 @@ export async function cancelOrder (offerId: string, userId: ObjectId): Promise<u
   } else if (offer.status === 'Confirmed') {
     return { message: 'The offer is not available anymore !' }
   }
+
+  // Get back the resources that were in the offer
+  const user: WithId<User> | null = await Users.findOne({ _id: new ObjectId(offer.seller_id) })
+  if (!user) {
+    return { message: 'User not found' }
+  }
+
+  const resourceType: string = offer.resource.toLowerCase()
+  const userResources = user.resources
+  if (!resourceType || !userResources) {
+    return { message: 'An error has occurred' }
+  }
+  userResources[resourceType] += offer.quantity
+  await Users.updateOne({ _id: new ObjectId(offer.seller_id) }, { $set: { resources: userResources } })
 
   await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Canceled' } })
   return { message: 'You successfully canceled the offer !' }
@@ -157,5 +171,5 @@ export async function instantSell (offer: fastSell, user: User): Promise<unknown
 
   user.money += offer.quantity * price[offer.resource.toLowerCase()]
   await Users.updateOne({ _id: new ObjectId(offer.seller_id) }, { $set: { resources: userResources, money: user.money } })
-  return { message: 'Sell successfull' }
+  return { message: 'Sell successfully' }
 }

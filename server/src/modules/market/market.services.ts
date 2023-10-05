@@ -1,7 +1,8 @@
 import { Markets } from '@/db/models/Markets'
 import { Transaction } from '@/db/models/Transactions'
 import { Users } from '@/db/models/User'
-import type { Market, creationOffer } from '@/types/market.types'
+import { type User } from '@/types/auth.types'
+import type { Market, creationOffer, fastSell } from '@/types/market.types'
 import { ObjectId } from 'mongodb'
 
 export async function getMarkets (sort: string, type: string | undefined = undefined): Promise<Market[] | unknown> {
@@ -136,4 +137,27 @@ export async function cancelOrder (offerId: string, userId: ObjectId): Promise<u
 
   await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Canceled' } })
   return { message: 'You successfully canceled the offer !' }
+}
+
+export async function instantSell (offer: fastSell, user: User): Promise<unknown> {
+  if (!user) {
+    return { message: 'This user does not exist' }
+  }
+  const userResources = user.resources
+  if (!userResources) {
+    return { message: 'Please select a resource' }
+  }
+  userResources[offer.resource.toLowerCase()] -= offer.quantity
+  const price: Record<string, number> = {
+    wood: 0.1,
+    stone: 0.1,
+    coal: 0.3,
+    iron: 0.5,
+    gold: 1,
+    diamond: 5
+  }
+
+  user.money += offer.quantity * price[offer.resource.toLowerCase()]
+  await Users.updateOne({ _id: new ObjectId(offer.seller_id) }, { $set: { resources: userResources, money: user.money } })
+  return { message: 'Sell successfull' }
 }

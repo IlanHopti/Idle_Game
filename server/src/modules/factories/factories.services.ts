@@ -33,6 +33,22 @@ export async function createFactory (user: string, type: string): Promise<unknow
   return { message: 'Creation Successful' }
 }
 
+export async function getFactoryResourcesByFactoryType (type: string): Promise<unknown> {
+  const factoryResources = await FactoryRessources.findOne({ type })
+  if (!factoryResources) {
+    return { message: 'No factory found' }
+  }
+  return factoryResources
+}
+
+export async function getFactoryAllResources(): Promise<unknown> {
+  const factoryResources = await FactoryRessources.find().toArray()
+  if (!factoryResources) {
+    return { message: 'No factory found' }
+  }
+  return factoryResources
+}
+
 export async function upgradeFactory (factoryId: string, user: User): Promise<unknown> {
   const factory = await Factory.findOne({ _id: new ObjectId(factoryId) })
   const requiredResources = await FactoryRessources.findOne({ type: factory?.type })

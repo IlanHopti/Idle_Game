@@ -1,9 +1,10 @@
 import { type Express,type Request,type Response } from "express";
 import {
-    createFactory,
-    getFactories,
-    getFactoriesByUser,
-    upgradeFactory
+  createFactory,
+  getFactories,
+  getFactoriesByUser, getFactoryAllResources,
+  getFactoryResourcesByFactoryType,
+  upgradeFactory
 } from './factories.services'
 
 export function factoriesRoutes (app: Express): void {
@@ -29,6 +30,16 @@ export function factoriesRoutes (app: Express): void {
 
   app.put('/factories/:id', async (req: Request, res: Response) => {
     const result = await upgradeFactory(req.params.id, req.body.user)
+    res.json(result)
+  })
+
+  app.get('/factory/resources/:type', async (req: Request, res: Response): Promise<void> => {
+    const result = await getFactoryResourcesByFactoryType(req.params.type)
+    res.json(result)
+  })
+
+  app.get('/factory/resources', async (_req: Request, res: Response): Promise<void> => {
+    const result = await getFactoryAllResources()
     res.json(result)
   })
 }

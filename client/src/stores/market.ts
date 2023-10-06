@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import router from '@/router'
-import { ref } from 'vue'
+import SoldItem from '../../public/market/SoldItem.mp3'
+import BuyItem from '../../public/market/BuyingSound.mp3'
 import type { MarketInterface, FastSell } from '@/types/market.interface'
 import Swal from 'sweetalert2'
 
@@ -37,6 +37,8 @@ export const useMarketStore = defineStore('market', {
               text: response.data.error
             })
           } else if (response.data.success) {
+            const audio = new Audio(SoldItem)
+            audio.play()
             Swal.fire({
               icon: 'success',
               title: 'Success',
@@ -58,6 +60,8 @@ export const useMarketStore = defineStore('market', {
         .put(`http://localhost:3001/market/confirm/${id}`, { quantity }, { withCredentials: true })
         .then((response) => {
           if (response.data.error) {
+            const audio = new Audio(BuyItem)
+            audio.play()
             Swal.fire({
               icon: 'error',
               title: 'Oops...',

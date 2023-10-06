@@ -66,7 +66,6 @@ const buyFactory = () => {
     const isEnough = resource >= quantity
     const resourceClass = isEnough ? 'text-green-700' : 'text-red-700'
 
-    console.log(quantity)
     contentHtml += `
     <div class="flex flex-col items-center justify-evenly">
       <div class="flex flex-row items-center justify-evenly">

@@ -123,7 +123,7 @@ export async function confirmOffer (offerId: string, buyerId: string, quantity: 
   let priceBought = offer.price
   if (parseInt(quantity) && parseInt(quantity) > 0) {
     multiplier = offer.price / offer.quantity
-    priceBought = multiplier * parseInt(quantity)
+    priceBought = Number((multiplier * parseInt(quantity)).toFixed(2))
   }
   buyerResource[resourceType] += parseInt(quantity) && parseInt(quantity) > 0 ? parseInt(quantity) : offer.quantity
   if (quantityRemaining <= 0) {

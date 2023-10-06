@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeMount, onErrorCaptured, onMounted, ref, watch } from 'vue'
+import { onErrorCaptured, onMounted, ref, watch } from 'vue'
 import Swal from 'sweetalert2'
 
 import CoalResource from '../../public/resources/coal.png'
@@ -18,6 +18,40 @@ import MarketplaceFilters from '@/components/marketplace/marketplaceFilters.vue'
 import MarketlaceAddSell from '@/components/marketplace/marketplaceAddSell.vue'
 import MarketplaceFastSell from '@/components/marketplace/marketplaceFastSell.vue'
 import router from '@/router'
+
+import { Modal } from 'flowbite-vue'
+
+const isShowModal = ref(false)
+function closeModal() {
+  isShowModal.value = false
+}
+let modalIndex = ref(0)
+let modalQuantity = ref(0)
+let modalPrice = ref(0)
+let modalResource = ref('')
+let modalId = ref('')
+let itemModal = ref<MarketInterface>()
+
+function showModal(
+  index: number,
+  quantity: number,
+  price: number,
+  resource: string,
+  id: string,
+  item: MarketInterface
+) {
+  console.log(index)
+  console.log(quantity)
+  console.log(price)
+  console.log(resource)
+  modalIndex.value = index
+  modalQuantity.value = quantity
+  modalPrice.value = price
+  modalResource.value = resource
+  modalId.value = id
+  isShowModal.value = true
+  itemModal.value = item
+}
 
 const market = useMarketStore()
 const user = useUserStore()
@@ -126,8 +160,8 @@ function upgradeQtyRender(qty: number) {
   return qty.toFixed(1) + suffixes[index]
 }
 
-const buyArticle = (item: MarketInterface) => {
-  if (item.seller_id === user.user._id.toString()) {
+const buyArticle = (item: MarketInterface | undefined) => {
+  if (item?.seller_id === user.user._id.toString()) {
     Swal.fire({
       title: 'Remove Sell',
       text: 'Do you want to remove this sell?',
@@ -138,8 +172,8 @@ const buyArticle = (item: MarketInterface) => {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33'
     }).then((result) => {
-      if (result.isConfirmed && item._id) {
-        market.removeArticle(item._id, type.value).then(() => {
+      if (result.isConfirmed && item?._id) {
+        market.removeArticle(item?._id, type.value).then(() => {
           Swal.fire({
             title: 'Success',
             text: 'You have successfully removed the article',
@@ -152,36 +186,22 @@ const buyArticle = (item: MarketInterface) => {
     return
   }
 
-  Swal.fire({
-    title: 'Buy Article',
-    html: `
-    <p
-      class="flex flex-row items-center justify-center text-sm font-medium text-center m-auto"
-    >
-      Are you sure you want to buy ${item.quantity}
-      <img class="w-5 h-auto mr-1" src="${image(item.resource.toLowerCase())}" alt="wood" />
-      for ${item.price}
-      <img class="w-5 mr-1" src="${CoinResource}" alt="" />
-      ?
-    </p>`,
-    icon: 'info',
-    showCancelButton: true,
-    confirmButtonText: 'Buy',
-    cancelButtonText: 'Cancel',
-    confirmButtonColor: '#3085d6',
-    cancelButtonColor: '#d33'
-  }).then((result) => {
-    if (result.isConfirmed && item._id) {
-      market.buyArticle(item._id, type.value).then(() => {
-        Swal.fire({
-          title: 'Success',
-          text: 'You have successfully bought the article',
-          icon: 'success',
-          confirmButtonText: 'Ok'
-        })
-      })
-    }
+  market.buyArticle(item?._id, quantity.value, type.value).then(() => {
+    Swal.fire({
+      title: 'Success',
+      text: 'You have successfully bought the article',
+      icon: 'success',
+      confirmButtonText: 'Ok'
+    })
+    closeModal()
   })
+}
+
+let quantity = ref(0)
+let price = ref(0)
+
+function calculateFee(totalQuantity: number, totalPrice: number) {
+  return ((quantity.value * totalPrice) / totalQuantity).toFixed(2)
 }
 </script>
 
@@ -227,6 +247,52 @@ const buyArticle = (item: MarketInterface) => {
     </button>
   </div>
 
+  <Modal :size="xl" v-if="isShowModal" @close="closeModal">
+    <template #body>
+      <p
+        class="flex flex-row items-center justify-center text-base leading-relaxed text-gray-500 dark:text-gray-400"
+      >
+        Are you sure you want to buy {{ modalQuantity }}
+        <img class="w-5 h-auto mr-1" :src="image(modalResource)" alt="wood" />
+        for {{ modalPrice.toFixed(2) }}
+        <img class="w-5 mr-1" :src="CoinResource" alt="" />
+        ?
+      </p>
+      <input
+        v-model="quantity"
+        type="number"
+        name="price"
+        id="quantity"
+        placeholder="1"
+        min="1"
+        :max="modalQuantity"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+        required
+      />
+      <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+        🚨 Warning: We will deduct 3% as a fee from the final price, resulting in
+        {{ calculateFee(modalQuantity, modalPrice) }} coins.
+      </div>
+    </template>
+    <template #footer>
+      <div class="flex justify-between">
+        <button
+          @click="closeModal"
+          type="button"
+          class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+        >
+          Decline
+        </button>
+        <button
+          @click="buyArticle(itemModal)"
+          type="button"
+          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+        >
+          I accept
+        </button>
+      </div>
+    </template>
+  </Modal>
   <!-- add sell toggle -->
   <MarketlaceAddSell :type="type" :sort="sort" :market="market" />
 
@@ -244,7 +310,19 @@ const buyArticle = (item: MarketInterface) => {
 
   <!-- marketplace -->
   <div class="grid grid-cols-4 gap-5">
-    <div v-for="(item, index) in marketList">
+    <div
+      v-for="(item, index) in marketList"
+      @click="
+        showModal(
+          index,
+          item.quantity,
+          item.price,
+          item.resource.toLowerCase(),
+          <string>item?._id,
+          item
+        )
+      "
+    >
       <div
         class="flex flex-col justify-center items-center border-2 border-solid rounded-lg w-32 pl-6 pr-6 m-auto"
         :class="`border-${item.resource.toLowerCase()}`"

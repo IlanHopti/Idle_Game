@@ -56,7 +56,7 @@ export async function redeemResources (user: any): Promise<void> {
       types.forEach((type) => {
         // If the type of the factory is the same as the type of the resource
         if (factory.type.toLowerCase() === type) {
-          resourcesToGive[type] = resourcesToGive[type] + factory.production ^ factory.level
+          resourcesToGive[type] = resourcesToGive[type] + factory.production * factory.level
         }
       })
     })

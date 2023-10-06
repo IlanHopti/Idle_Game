@@ -20,38 +20,42 @@ const formData = ref({
   price: 0
 })
 
+const price: Record<string, number> = {
+  wood: 0.1,
+  stone: 0.1,
+  coal: 0.3,
+  iron: 0.5,
+  gold: 1,
+  diamond: 5
+}
 function addArticle() {
-  type.value = formData.value.type
-
-  const article = {
-    resource: formData.value.type,
-    quantity: formData.value.quantity,
-    price: formData.value.price,
-    seller_id: user.user._id.toString()
-  }
-
-  market.addArticle(article, formData.value.type, sort.value).then(() => {
+    type.value = formData.value.type
+    const article = {
+        resource: formData.value.type,
+        quantity: formData.value.quantity,
+        seller_id: user.user._id.toString()
+    }
+    market.fastSell(article).then(()=> {
     formData.value.type = 'Wood'
     formData.value.quantity = 0
-    formData.value.price = 0
-
-    const authenticationModal = document.querySelector(
-      '[data-modal-hide="authentication-modal"]'
-    ) as HTMLElement
-    if (authenticationModal) {
-      authenticationModal.click()
-    }
-  })
+        const fastModal = document.querySelector(
+            '[data-modal-hide="fast-modal"]'
+            ) as HTMLElement
+            if (fastModal) {
+                fastModal.click()
+            }
+        })
 }
-
-function calculateFee() {
-  return formData.value.price - (formData.value.price * 0.03)
+function calculateSum() {
+  if(!formData.value.quantity) return 0
+  console.log(formData.value.type)
+  console.log(price[formData.value.type])
+  return (formData.value.quantity * price[formData.value.type.toLowerCase()]).toFixed(2)
 }
 </script>
-
 <template>
   <div
-    id="authentication-modal"
+    id="fast-modal"
     tabindex="-1"
     aria-hidden="true"
     class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full"
@@ -62,7 +66,7 @@ function calculateFee() {
         <button
           type="button"
           class="absolute top-3 right-2.5 text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-          data-modal-hide="authentication-modal"
+          data-modal-hide="fast-modal"
         >
           <svg
             class="w-3 h-3"
@@ -90,7 +94,7 @@ function calculateFee() {
                 for="email"
                 class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                Your resource
+                Resource to sell
               </label>
               <select
                 v-model="formData.type"
@@ -121,26 +125,10 @@ function calculateFee() {
                 required
               />
             </div>
-            <div>
-              <label
-                for="password"
-                class="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
-              >
-                Price
-              </label>
-              <input
-                v-model="formData.price"
-                type="number"
-                name="price"
-                id="quantity"
-                placeholder="1"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
-                required
-              />
-                <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                    🚨 Warning: We will deduct 3% as a fee from the final price, resulting in {{ calculateFee() }} coins.
-                </div>
-            </div>
+
+              <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                 You'll receive {{ calculateSum() }} coins from this sell.
+              </div>
 
             <button
               type="submit"

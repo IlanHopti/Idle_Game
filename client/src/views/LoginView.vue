@@ -60,7 +60,6 @@ const loginUser = async () => {
   try {
     // Assuming connectUser.login returns a promise
     const result = await connectUser.login(emailOrUsername.value, password.value)
-    console.log(result)
     if (result.success) {
       await router.push('/')
     } else {

@@ -8,14 +8,14 @@
         </div>
         <div class="space-x-4">
           <router-link to="/" class="text-white hover:text-blue-200">Home</router-link>
-          <router-link to="/factories" class="text-white hover:text-blue-200"
-            >My Factories</router-link
-          >
           <router-link to="/marketplace" class="text-white hover:text-blue-200"
             >MarketPlace</router-link
           >
           <router-link to="/achievements" class="text-white hover:text-blue-200"
             >Achievements</router-link
+          >
+          <router-link to="/transactions" class="text-white hover:text-blue-200"
+            >My Transactions</router-link
           >
           <template v-if="!isLogged">
             <router-link to="/register" class="text-white hover:text-blue-200"

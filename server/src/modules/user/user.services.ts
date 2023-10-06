@@ -37,7 +37,7 @@ export async function getUserById (id: string): Promise<WithId<User> | null> {
   return await Users.findOne({ _id: userId })
 }
 
-export async function redeemResources (user: any): Promise<void> {
+export async function redeemResources (user: any, action: string): Promise<void> {
   const resourcesToGive: Record<string, number> = {
     stone: 0,
     iron: 0,
@@ -61,6 +61,13 @@ export async function redeemResources (user: any): Promise<void> {
       })
     })
   })
+
+  if (action === 'automatic') {
+    const timeSinceLastCall: number = new Date().getTime() - new Date(user.last_action).getTime()
+    if (timeSinceLastCall < 2500) {
+      return
+    }
+  }
 
   // Now for each resources we add the amount to the user
   for (const resource in resourcesToGive) {

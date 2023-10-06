@@ -61,7 +61,7 @@ onMounted(async () => {
 
 const handleClick = (e: Event) => {
   if (useUserStore().user.length !== 0) {
-    useUserStore().redeemResources()
+    useUserStore().redeemResources('click')
   }
 }
 onBeforeMount(() => {

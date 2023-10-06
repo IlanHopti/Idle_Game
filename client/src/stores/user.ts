@@ -82,11 +82,11 @@ export const useUserStore = defineStore('user', {
           console.log(error)
         })
     },
-    async redeemResources() {
+    async redeemResources(action: string) {
       try {
         await axios.post(
           'http://localhost:3001/user/redeem/resources',
-          {},
+          { action },
           { withCredentials: true }
         )
         await this.fetchUser()

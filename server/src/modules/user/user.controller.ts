@@ -19,8 +19,10 @@ export function userRoutes (app: Express): void {
       res.status(401).json({ message: 'Unauthorized' })
       return
     }
+
+    const action = req.body.action
     // eslint-disable-next-line @typescript-eslint/no-confusing-void-expression
-    const result = await redeemResources(user)
+    const result = await redeemResources(user, action)
 
     res.json(result)
   })

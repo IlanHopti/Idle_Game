@@ -31,7 +31,7 @@ onMounted(async () => {
 
   interval = setInterval(async () => {
     try {
-      await userConnected.redeemResources()
+      await userConnected.redeemResources('automatic')
     } catch (err) {
       console.log('Error redeeming resources:')
     }

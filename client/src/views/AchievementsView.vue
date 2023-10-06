@@ -32,7 +32,13 @@ import {onBeforeMount, onErrorCaptured, onMounted, ref, watch} from 'vue'
 import router from "@/router";
 import {useUserStore} from "@/stores/user";
 
+const user = useUserStore()
+
 onMounted(async () => {
+    user.fetchUser().then(() => {
+        user.isLogged ? '' : router.push('/login')
+    })
+
     const unwatchIsLogged = watch(
         () => user.isLogged,
         (newValue) => {
@@ -47,10 +53,7 @@ onMounted(async () => {
     })
 })
 
-const user = useUserStore()
-onBeforeMount(() => {
-    user.isLogged ? '' : router.push('/login')
-})
+
 
 let successes = ref([])
 let achievedSuccess = ref([])

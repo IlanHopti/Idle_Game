@@ -40,6 +40,10 @@ function showModal(id: string) {
 }
 
 onMounted(async () => {
+  user.fetchUser().then(() => {
+    user.isLogged ? '' : router.push('/login')
+  })
+
   const unwatchIsLogged = watch(
     () => userStore.isLogged,
     (newValue) => {
@@ -52,12 +56,6 @@ onMounted(async () => {
   onErrorCaptured(() => {
     unwatchIsLogged()
   })
-})
-
-onBeforeMount(() => {
-  userStore.isLogged ? factories.getFactoryAllResources().then(() => {
-    factoryResources = factories.factoryResources
-  }) : router.push('/login')
 })
 
 const handleClick = (e: Event) => {

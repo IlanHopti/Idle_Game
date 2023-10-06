@@ -28,6 +28,10 @@ const sort = ref('asc')
 const owner = ref('Other')
 
 onMounted(async () => {
+  user.fetchUser().then(() => {
+    user.isLogged ? '' : router.push('/login')
+  })
+
   const unwatchIsLogged = watch(
     () => user.isLogged,
     (newValue) => {
@@ -40,13 +44,6 @@ onMounted(async () => {
   onErrorCaptured(() => {
     unwatchIsLogged()
   })
-})
-
-onBeforeMount(() => {
-  user.isLogged ? market.fetchMarket(type.value, sort.value).then(() => {
-    marketList.value = market.market
-    updateOwner(owner.value)
-  }) : router.push('/login')
 })
 
 function updateType(newType: string) {

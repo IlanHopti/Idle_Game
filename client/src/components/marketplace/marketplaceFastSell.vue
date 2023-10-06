@@ -19,6 +19,15 @@ const formData = ref({
   quantity: 0,
   price: 0
 })
+
+const price: Record<string, number> = {
+  wood: 0.1,
+  stone: 0.1,
+  coal: 0.3,
+  iron: 0.5,
+  gold: 1,
+  diamond: 5
+}
 function addArticle() {
     type.value = formData.value.type
     const article = {
@@ -36,6 +45,12 @@ function addArticle() {
                 fastModal.click()
             }
         })
+}
+function calculateSum() {
+  if(!formData.value.quantity) return 0
+  console.log(formData.value.type)
+  console.log(price[formData.value.type])
+  return (formData.value.quantity * price[formData.value.type.toLowerCase()]).toFixed(2)
 }
 </script>
 <template>
@@ -110,6 +125,10 @@ function addArticle() {
                 required
               />
             </div>
+
+              <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                 You'll receive {{ calculateSum() }} coins from this sell.
+              </div>
 
             <button
               type="submit"

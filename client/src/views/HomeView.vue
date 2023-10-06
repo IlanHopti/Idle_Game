@@ -31,7 +31,6 @@ function closeModal() {
   isShowModal.value = false
 }
 function showModal(id: string) {
-  console.log(id)
   factoryData = factories.getFactory(id)
   console.log(factoryData)
   // console.log(factories.getFactory(id))
@@ -44,12 +43,8 @@ const handleClick = (e: Event) => {
   }
 }
 onBeforeMount(() => {
-  console.log('BeforeMount')
   factories.getFactoryAllResources().then(() => {
-    console.log(factories.factoryResources)
     factoryResources = factories.factoryResources
-    console.log('rzjdbfosbdf')
-    console.log(factories.factoryResourcesWood)
   })
 })
 
@@ -73,19 +68,19 @@ function factoryName(key: string) {
 }
 function resourceImage(key: string) {
   switch (key) {
-    case 'Wood':
+    case 'wood':
       return WoodResource
-    case 'Stone':
+    case 'stone':
       return StoneResource
-    case 'Coal':
+    case 'coal':
       return CoalResource
-    case 'Iron':
+    case 'iron':
       return IronResource
-    case 'Gold':
+    case 'gold':
       return GoldResource
-    case 'Diamond':
+    case 'diamond':
       return DiamondResource
-    case 'Coin':
+    case 'money':
       return CoinResource
     default:
       return ''
@@ -152,66 +147,40 @@ function actualResource(key: string) {
 }
 
 function resourcesNeededForUpgrade(type: string, actualLevel: number) {
+let resources = ref([])
   switch (type) {
     case 'Wood':
-      return factories.factoryResourcesWood[actualLevel + 1].wood
-    case 'Stone':
-      return factories.factoryResourcesStone[actualLevel + 1].stone
-    case 'Coal':
-      return factories.factoryResourcesCoal[actualLevel + 1].coal
-    case 'Iron':
-      return factories.factoryResourcesIron[actualLevel + 1].iron
-    case 'Gold':
-      return factories.factoryResourcesGold[actualLevel + 1].gold
-    case 'Diamond':
-      return factories.factoryResourcesDiamond[actualLevel + 1].diamond
-    default:
-      return ''
-  }
-}
-
-function resourcesNeededForUpgrade2(type: string, actualLevel: number) {
-  let resources = ref([])
-  switch (type) {
-    case 'Wood':
-      console.log('aaaaaaa')
-      // console.log(factories.factoryResourcesWood[actualLevel + 1])
       for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
-        console.log(`${key}: ${value}`)
         resources.value.push(`${key}: ${value}`)
       }
       return resources.value
-
     case 'Stone':
-      return factories.factoryResourcesStone[actualLevel + 1].stone
+      for (const [key, value] of Object.entries(factories.factoryResourcesStone[actualLevel + 1])) {
+        resources.value.push(`${key}: ${value}`)
+      }
+      return resources.value
     case 'Coal':
-      return factories.factoryResourcesCoal[actualLevel + 1].coal
+      for (const [key, value] of Object.entries(factories.factoryResourcesCoal[actualLevel + 1])) {
+        resources.value.push(`${key}: ${value}`)
+      }
+      return resources.value
     case 'Iron':
-      return factories.factoryResourcesIron[actualLevel + 1].iron
+      for (const [key, value] of Object.entries(factories.factoryResourcesIron[actualLevel + 1])) {
+        resources.value.push(`${key}: ${value}`)
+      }
+      return resources.value
     case 'Gold':
-      return factories.factoryResourcesGold[actualLevel + 1].gold
+      for (const [key, value] of Object.entries(factories.factoryResourcesGold[actualLevel + 1])) {
+        resources.value.push(`${key}: ${value}`)
+      }
+      return resources.value
     case 'Diamond':
-      return factories.factoryResourcesDiamond[actualLevel + 1].diamond
+      for (const [key, value] of Object.entries(factories.factoryResourcesDiamond[actualLevel + 1])) {
+        resources.value.push(`${key}: ${value}`)
+      }
+      return resources.value
     default:
       return resources
-  }
-}
-function coinNeededForUpgrade(type: string, actualLevel: number) {
-  switch (type) {
-    case 'Wood':
-      return factories.factoryResourcesWood[actualLevel + 1].money
-    case 'Stone':
-      return factories.factoryResourcesStone[actualLevel + 1].money
-    case 'Coal':
-      return factories.factoryResourcesCoal[actualLevel + 1].money
-    case 'Iron':
-      return factories.factoryResourcesIron[actualLevel + 1].money
-    case 'Gold':
-      return factories.factoryResourcesGold[actualLevel + 1].money
-    case 'Diamond':
-      return factories.factoryResourcesDiamond[actualLevel + 1].money
-    default:
-      return ''
   }
 }
 
@@ -273,11 +242,11 @@ function canUpgrade(type: string, actualLevel: number) {
                 </div>
                 <div class="flex flex-col items-center justify-between h-32">
                   <h1 class="text-2xl font-bold">{{ factoryName(factoryData?.type) }}</h1>
-                  <p class="text-sm text-gray-500">Lvl {{ factoryData?.level }} / 10</p>
+                  <p class="lg:text-sm text-gray-500">Lvl {{ factoryData?.level }} / 10</p>
                   <p class="text-md font-bold flex flex-row items-center">
-                    {{ factoryData?.production }}
-                    <img class="w-6 h-auto ml-2" :src="resourceImage(factoryData?.type)" />
-                    / h
+                    {{ factoryData?.production * factoryData?.level }}
+                    <img class="w-6 h-auto ml-2" :src="resourceImage(factoryData?.type.toLowerCase())" />
+                    / 3s
                   </p>
                 </div>
               </div>
@@ -293,57 +262,17 @@ function canUpgrade(type: string, actualLevel: number) {
                 <div class="w-full border-t-2 border-dashed border-black"></div>
 
                 <!-- Units for upgrade -->
-                <div class="flex flex-row items-center justify-evenly mt-4 mb-4">
-                  <div class="flex flex-col items-center justify-evenly">
-                    <div class="flex flex-row items-center justify-evenly">
-                      <div class="mr-6 w-fit">
-                        <img
-                          class="w-16 h-auto"
-                          :src="resourceImage(factoryData?.type)"
-                          alt="factory"
-                        />
+                  <div class="flex flex-row items-center justify-center mt-4 mb-4">
+                      <div class="grid grid-cols-2 gap-4">
+                          <div v-for="resource in resourcesNeededForUpgrade(factoryData?.type, factoryData?.level)" :key="resource" class="flex flex-col items-center justify-center">
+                              <p class="text-md font-bold m-3">
+                                  {{ resource.split(':')[1] }}
+                              </p>
+                              <img :src="resourceImage(resource.split(':')[0])" class="w-12 h-auto" />
+                          </div>
                       </div>
-                      <div class="flex flex-row items-center justify-between h-16">
-                        <p>
-                          <span
-                            class="font-bold"
-                            :class="
-                              actualResource(factoryData?.type) <
-                              resourcesNeededForUpgrade(factoryData?.type, factoryData?.level)
-                                ? `text-red-700`
-                                : `text-green-700`
-                            "
-                          >
-                            {{ actualResource(factoryData?.type) }}
-                          </span>
-                          / {{ resourcesNeededForUpgrade(factoryData?.type, factoryData?.level) }} /
-                          {{ resourcesNeededForUpgrade2(factoryData?.type, factoryData?.level) }}
-                        </p>
-                      </div>
-                    </div>
-                    <div class="flex flex-row items-center justify-evenly">
-                      <div class="mr-6 w-fit">
-                        <img class="w-16 h-auto" :src="Coin" alt="coin" />
-                      </div>
-                      <div class="flex flex-row items-center justify-between h-16">
-                        <p>
-                          <span
-                            class="font-bold"
-                            :class="
-                              user.user.money <
-                              coinNeededForUpgrade(factoryData?.type, factoryData?.level)
-                                ? `text-red-700`
-                                : `text-green-700`
-                            "
-                          >
-                            {{ user.user.money }}
-                          </span>
-                          / {{ coinNeededForUpgrade(factoryData?.type, factoryData?.level) }}
-                        </p>
-                      </div>
-                    </div>
                   </div>
-                </div>
+
 
                 <!-- Divider -->
                 <div class="w-full border-t-2 border-dashed border-black"></div>
@@ -352,10 +281,10 @@ function canUpgrade(type: string, actualLevel: number) {
                 <div class="flex flex-col items-center justify-evenly mt-4 mb-4">
                   <h2 class="text-xl font-bold">Level {{ factoryData?.level + 1 }} :</h2>
                   <div>
-                    <p class="flex flex-row items-center justify-between text-md font-bold">
-                      {{ factoryData?.production * (factoryData?.level + 1) }}
-                      <img class="w-6 h-auto ml-2" :src="resourceImage(factoryData?.type)" />
-                      / h
+                    <p class="flex flex-row items-center justify-between lg:text-sm font-bold">
+                      {{ (factoryData?.production * (factoryData?.level + 1)).toFixed(2) }}
+                      <img class="w-8 h-auto ml-1 mr-1" :src="resourceImage(factoryData?.type.toLowerCase())" />
+                      <p class="lg:text-sm font-bold">/ 3s</p>
                     </p>
                   </div>
                 </div>

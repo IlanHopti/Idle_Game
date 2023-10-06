@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {onBeforeMount, onErrorCaptured, onMounted, ref, watch} from 'vue'
+import { onBeforeMount, onErrorCaptured, onMounted, ref, watch } from 'vue'
 import Swal from 'sweetalert2'
 
 import CoalResource from '../../public/resources/coal.png'
@@ -17,7 +17,7 @@ import type { MarketInterface } from '@/types/market.interface'
 import MarketplaceFilters from '@/components/marketplace/marketplaceFilters.vue'
 import MarketlaceAddSell from '@/components/marketplace/marketplaceAddSell.vue'
 import MarketplaceFastSell from '@/components/marketplace/marketplaceFastSell.vue'
-import router from "@/router";
+import router from '@/router'
 
 const market = useMarketStore()
 const user = useUserStore()

@@ -28,15 +28,15 @@
 <script setup>
 import { onBeforeMount, ref, computed, onMounted, watch, onErrorCaptured } from 'vue'
 import { useUserStore } from '@/stores/user'
-import router from "@/router";
+import router from '@/router'
 
 let transactions = ref([])
 let userStore = useUserStore()
 
 onMounted(() => {
-    userStore.fetchUser().then(() => {
-        userStore.isLogged ? '' : router.push('/login')
-    })
+  userStore.fetchUser().then(() => {
+    userStore.isLogged ? '' : router.push('/login')
+  })
   const unwatchTransactions = watch(
     () => userStore.transactions,
     (newValue) => {
@@ -45,18 +45,17 @@ onMounted(() => {
   )
 
   const unwatchIsLogged = watch(
-      () => userStore.isLogged,
-      (newValue) => {
-          if (!newValue) {
-              router.push('/login')
-          }
+    () => userStore.isLogged,
+    (newValue) => {
+      if (!newValue) {
+        router.push('/login')
       }
+    }
   )
 
   // Clean up the watcher when the component is unmounted
   onErrorCaptured(() => {
-    unwatchTransactions(),
-    unwatchIsLogged()
+    unwatchTransactions(), unwatchIsLogged()
   })
 })
 
@@ -64,6 +63,6 @@ onBeforeMount(async () => {
   await userStore.fetchAllTransactions().then(() => {
     transactions.value = userStore.transactions
   })
-  !(userStore.isLogged) ? router.push('/login') : null
+  !userStore.isLogged ? router.push('/login') : null
 })
 </script>

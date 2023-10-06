@@ -19,7 +19,7 @@ const props = defineProps<{
 }>()
 
 function canBuy() {
-  let canBuy = true
+  let canBuy: boolean = true
   factories.factoryResources.forEach((factoryResource) => {
     if (factoryResource.type == props.factoryType) {
       for (const key in factoryResource.resources[0]) {

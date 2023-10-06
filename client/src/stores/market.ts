@@ -3,7 +3,7 @@ import axios from 'axios'
 import router from '@/router'
 import { ref } from 'vue'
 import type { MarketInterface, FastSell } from '@/types/market.interface'
-import Swal from "sweetalert2";
+import Swal from 'sweetalert2'
 
 interface MarketState {
   market: MarketInterface[]
@@ -34,13 +34,13 @@ export const useMarketStore = defineStore('market', {
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
-              text: response.data.error,
+              text: response.data.error
             })
           } else if (response.data.success) {
             Swal.fire({
               icon: 'success',
               title: 'Success',
-              text: response.data.success,
+              text: response.data.success
             })
           }
           this.fetchMarket(type, 'asc')
@@ -49,7 +49,7 @@ export const useMarketStore = defineStore('market', {
           Swal.fire({
             icon: 'error',
             title: 'Oops...',
-            text: error?.toString(),
+            text: error?.toString()
           })
         })
     },
@@ -61,13 +61,13 @@ export const useMarketStore = defineStore('market', {
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
-              text: response.data.error,
+              text: response.data.error
             })
           } else if (response.data.success) {
             Swal.fire({
               icon: 'success',
               title: 'Success',
-              text: response.data.success,
+              text: response.data.success
             })
           }
           this.fetchMarket(type, 'asc')
@@ -84,13 +84,13 @@ export const useMarketStore = defineStore('market', {
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
-              text: response.data.error,
+              text: response.data.error
             })
           } else if (response.data.success) {
             Swal.fire({
               icon: 'success',
               title: 'Success',
-              text: response.data.success,
+              text: response.data.success
             })
           }
           this.fetchMarket(type, 'asc')
@@ -107,13 +107,13 @@ export const useMarketStore = defineStore('market', {
             Swal.fire({
               icon: 'error',
               title: 'Oops...',
-              text: response.data.error,
+              text: response.data.error
             })
           } else if (response.data.success) {
             Swal.fire({
               icon: 'success',
               title: 'Success',
-              text: response.data.success,
+              text: response.data.success
             })
           }
           this.fetchMarket(article.resource, 'asc')

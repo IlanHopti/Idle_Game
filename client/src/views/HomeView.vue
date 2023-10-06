@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import FactoryColumn from '../components/factoriesColumn.vue'
 import { Modal } from 'flowbite-vue'
-import {onBeforeMount, onErrorCaptured, onMounted, ref, watch} from 'vue'
+import { onBeforeMount, onErrorCaptured, onMounted, ref, watch } from 'vue'
 import { useFactoriesStore } from '@/stores/factories'
 import { useUserStore } from '@/stores/user'
 import CoalResource from '../../public/resources/coal.png'
@@ -18,7 +18,7 @@ import StoneFactory from '../../public/factories/stone_factory.jpeg'
 import DiamondFactory from '../../public/factories/diamond_factory.jpeg'
 import GoldFactory from '../../public/factories/gold_factory.png'
 import Coin from '../../public/resources/coin.jpeg'
-import router from "@/router";
+import router from '@/router'
 
 import Swal from 'sweetalert2'
 
@@ -169,7 +169,7 @@ function actualResource(key: string) {
 }
 
 function resourcesNeededForUpgrade(type: string, actualLevel: number) {
-let resources = ref([])
+  let resources = ref([])
   switch (type) {
     case 'Wood':
       for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
@@ -197,7 +197,9 @@ let resources = ref([])
       }
       return resources.value
     case 'Diamond':
-      for (const [key, value] of Object.entries(factories.factoryResourcesDiamond[actualLevel + 1])) {
+      for (const [key, value] of Object.entries(
+        factories.factoryResourcesDiamond[actualLevel + 1]
+      )) {
         resources.value.push(`${key}: ${value}`)
       }
       return resources.value
@@ -210,7 +212,7 @@ function canUpgrade(type: string, actualLevel: number) {
   switch (type) {
     case 'Wood':
       for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
-        if(key === 'money' && user.user.money < value) {
+        if (key === 'money' && user.user.money < value) {
           return false
         }
         if (user.user.resources[key] < value) {
@@ -220,7 +222,7 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Stone':
       for (const [key, value] of Object.entries(factories.factoryResourcesStone[actualLevel + 1])) {
-        if(key === 'money' && user.user.money < value) {
+        if (key === 'money' && user.user.money < value) {
           return false
         }
         if (user.user.resources[key] < value) {
@@ -230,7 +232,7 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Coal':
       for (const [key, value] of Object.entries(factories.factoryResourcesCoal[actualLevel + 1])) {
-        if(key === 'money' && user.user.money < value) {
+        if (key === 'money' && user.user.money < value) {
           return false
         }
         if (user.user.resources[key] < value) {
@@ -240,7 +242,7 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Iron':
       for (const [key, value] of Object.entries(factories.factoryResourcesIron[actualLevel + 1])) {
-        if(key === 'money' && user.user.money < value) {
+        if (key === 'money' && user.user.money < value) {
           return false
         }
         if (user.user.resources[key] < value) {
@@ -250,7 +252,7 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Gold':
       for (const [key, value] of Object.entries(factories.factoryResourcesGold[actualLevel + 1])) {
-        if(key === 'money' && user.user.money < value) {
+        if (key === 'money' && user.user.money < value) {
           return false
         }
         if (user.user.resources[key] < value) {
@@ -259,11 +261,13 @@ function canUpgrade(type: string, actualLevel: number) {
       }
       return true
     case 'Diamond':
-      for (const [key, value] of Object.entries(factories.factoryResourcesDiamond[actualLevel + 1])) {
-        if(key === 'money' && user.user.money < value) {
+      for (const [key, value] of Object.entries(
+        factories.factoryResourcesDiamond[actualLevel + 1]
+      )) {
+        if (key === 'money' && user.user.money < value) {
           return false
         }
-        if (user.user.resources[key] < value ) {
+        if (user.user.resources[key] < value) {
           return false
         }
       }
@@ -277,7 +281,7 @@ function errorUpgrade() {
   Swal.fire({
     icon: 'error',
     title: 'Oops...',
-    text: 'You don\'t have enough resources',
+    text: "You don't have enough resources"
   })
 }
 
@@ -285,7 +289,7 @@ function successUpgrade() {
   Swal.fire({
     icon: 'success',
     title: 'Success',
-    text: 'You have successfully upgraded your factory',
+    text: 'You have successfully upgraded your factory'
   })
 }
 </script>
@@ -313,7 +317,11 @@ function successUpgrade() {
                   <p class="lg:text-sm text-gray-500">Lvl {{ factoryData?.level }} / 10</p>
                   <p class="text-md font-bold flex flex-row items-center">
                     {{ factoryData?.production * factoryData?.level }}
-                    <img class="w-6 h-auto ml-2" :src="resourceImage(factoryData?.type.toLowerCase())" />
+                    <img
+                      class="w-6 h-auto ml-2"
+                      :src="resourceImage(factoryData?.type.toLowerCase())"
+                      alt="resources"
+                    />
                     / 3s
                   </p>
                 </div>
@@ -330,28 +338,37 @@ function successUpgrade() {
                 <div class="w-full border-t-2 border-dashed border-black"></div>
 
                 <!-- Units for upgrade -->
-                  <div class="flex flex-row items-center justify-center mt-4 mb-4">
-                      <div class="grid grid-cols-2 gap-4">
-                          <div v-for="resource in resourcesNeededForUpgrade(factoryData?.type, factoryData?.level)" :key="resource" class="flex flex-col items-center justify-center">
-                              <p class="text-md font-bold m-3">
-                                <span
-                                  class="font-bold"
-                                  :class="
-                              actualResource(resource.split(':')[0]) <
-                              resource.split(':')[1]
-                                ? `text-red-700`
-                                : `text-green-700`
-                            "
-                                >
-                                  {{ actualResource(resource.split(':')[0]) }}
-                                </span>
-                                / {{ resource.split(':')[1] }}
-                              </p>
-                              <img :src="resourceImage(resource.split(':')[0])" class="w-12 h-auto"  alt='resource'/>
-                          </div>
-                      </div>
+                <div class="flex flex-row items-center justify-center mt-4 mb-4">
+                  <div class="grid grid-cols-2 gap-4">
+                    <div
+                      v-for="resource in resourcesNeededForUpgrade(
+                        factoryData?.type,
+                        factoryData?.level
+                      )"
+                      :key="resource"
+                      class="flex flex-col items-center justify-center"
+                    >
+                      <p class="text-md font-bold m-3">
+                        <span
+                          class="font-bold"
+                          :class="
+                            actualResource(resource.split(':')[0]) < resource.split(':')[1]
+                              ? `text-red-700`
+                              : `text-green-700`
+                          "
+                        >
+                          {{ actualResource(resource.split(':')[0]) }}
+                        </span>
+                        / {{ resource.split(':')[1] }}
+                      </p>
+                      <img
+                        :src="resourceImage(resource.split(':')[0])"
+                        class="w-12 h-auto"
+                        alt="resource"
+                      />
+                    </div>
                   </div>
-
+                </div>
 
                 <!-- Divider -->
                 <div class="w-full border-t-2 border-dashed border-black"></div>
@@ -362,8 +379,12 @@ function successUpgrade() {
                   <div>
                     <p class="flex flex-row items-center justify-between lg:text-sm font-bold">
                       {{ (factoryData?.production * (factoryData?.level + 1)).toFixed(2) }}
-                      <img class="w-8 h-auto ml-1 mr-1" :src="resourceImage(factoryData?.type.toLowerCase())" />
-                      <p class="lg:text-sm font-bold">/ 3s</p>
+                      <img
+                        class="w-8 h-auto ml-1 mr-1"
+                        :src="resourceImage(factoryData?.type.toLowerCase())"
+                        alt="resource"
+                      />
+                      / 3s
                     </p>
                   </div>
                 </div>
@@ -371,7 +392,13 @@ function successUpgrade() {
                   :data-popover-target="
                     !canUpgrade(factoryData?.type, factoryData?.level) ? `popover-default` : ``
                   "
-                  @click="canUpgrade(factoryData?.type, factoryData?.level) ?   factories.upgradeFactory(factoryData?._id).then(() => closeModal(), successUpgrade()) : errorUpgrade()"
+                  @click="
+                    canUpgrade(factoryData?.type, factoryData?.level)
+                      ? factories
+                          .upgradeFactory(factoryData?._id)
+                          .then(() => closeModal(), successUpgrade())
+                      : errorUpgrade()
+                  "
                   type="button"
                   class="w-full px-4 py-2 text-base font-medium text-center text-white transition duration-200 ease-in bg-green-700 rounded-lg shadow-md hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   :class="
@@ -415,7 +442,6 @@ function successUpgrade() {
         :factoryUpgrade="factoryResources"
         @showModal="showModal"
       />
-      <!--        @click="showModal"-->
 
       <!-- Coal -->
       <FactoryColumn

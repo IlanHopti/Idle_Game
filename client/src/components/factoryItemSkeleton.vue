@@ -51,11 +51,13 @@ function image(key: string) {
 }
 
 let unitsNeededForBuy = ref({})
-factories.factoryResources.forEach((factoryResource) => {
-  if (factoryResource.type == props.factoryType) {
-    unitsNeededForBuy.value = factoryResource.resources[0]
-  }
-})
+if (unitsNeededForBuy.value.length == undefined) {
+  factories.factoryResources.forEach((factoryResource) => {
+    if (factoryResource.type == props.factoryType) {
+      unitsNeededForBuy.value = factoryResource.resources[0]
+    }
+  })
+}
 const buyFactory = () => {
   let contentHtml = `<div class="flex flex-row items-center justify-evenly mt-4 mb-4">`
 

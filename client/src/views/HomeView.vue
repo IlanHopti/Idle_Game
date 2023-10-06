@@ -4,7 +4,6 @@ import { Modal } from 'flowbite-vue'
 import {onBeforeMount, onErrorCaptured, onMounted, ref, watch} from 'vue'
 import { useFactoriesStore } from '@/stores/factories'
 import { useUserStore } from '@/stores/user'
-
 import CoalResource from '../../public/resources/coal.png'
 import IronResource from '../../public/resources/iron_ingot.png'
 import WoodResource from '../../public/resources/wood.png'
@@ -20,6 +19,8 @@ import DiamondFactory from '../../public/factories/diamond_factory.jpeg'
 import GoldFactory from '../../public/factories/gold_factory.png'
 import Coin from '../../public/resources/coin.jpeg'
 import router from "@/router";
+
+import Swal from 'sweetalert2'
 
 const factories = useFactoriesStore()
 const user = useUserStore()
@@ -148,19 +149,19 @@ function borderColor(key: string) {
 
 function actualResource(key: string) {
   switch (key) {
-    case 'Wood':
+    case 'wood':
       return user.user.resources.wood
-    case 'Stone':
+    case 'stone':
       return user.user.resources.stone
-    case 'Coal':
+    case 'coal':
       return user.user.resources.coal
-    case 'Iron':
+    case 'iron':
       return user.user.resources.iron
-    case 'Gold':
+    case 'gold':
       return user.user.resources.gold
-    case 'Diamond':
+    case 'diamond':
       return user.user.resources.diamond
-    case 'Coin':
+    case 'money':
       return user.user.money
     default:
       return ''
@@ -208,38 +209,66 @@ let resources = ref([])
 function canUpgrade(type: string, actualLevel: number) {
   switch (type) {
     case 'Wood':
-      return (
-        user.user.resources.wood >= factories.factoryResourcesWood[actualLevel + 1].wood &&
-        user.user.money >= factories.factoryResourcesWood[actualLevel + 1].money
-      )
+      for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
+        if (user.user.resources[key] < value) {
+          return false
+        }
+      }
+      return true
     case 'Stone':
-      return (
-        user.user.resources.stone >= factories.factoryResourcesStone[actualLevel + 1].stone &&
-        user.user.money >= factories.factoryResourcesStone[actualLevel + 1].money
-      )
+      for (const [key, value] of Object.entries(factories.factoryResourcesStone[actualLevel + 1])) {
+        if (user.user.resources[key] < value) {
+          return false
+        }
+      }
+      return true
     case 'Coal':
-      return (
-        user.user.resources.coal >= factories.factoryResourcesCoal[actualLevel + 1].coal &&
-        user.user.money >= factories.factoryResourcesCoal[actualLevel + 1].money
-      )
+      for (const [key, value] of Object.entries(factories.factoryResourcesCoal[actualLevel + 1])) {
+        if (user.user.resources[key] < value) {
+          return false
+        }
+      }
+      return true
     case 'Iron':
-      return (
-        user.user.resources.iron >= factories.factoryResourcesIron[actualLevel + 1].iron &&
-        user.user.money >= factories.factoryResourcesIron[actualLevel + 1].money
-      )
+      for (const [key, value] of Object.entries(factories.factoryResourcesIron[actualLevel + 1])) {
+        if (user.user.resources[key] < value) {
+          return false
+        }
+      }
+      return true
     case 'Gold':
-      return (
-        user.user.resources.gold >= factories.factoryResourcesGold[actualLevel + 1].gold &&
-        user.user.money >= factories.factoryResourcesGold[actualLevel + 1].money
-      )
+      for (const [key, value] of Object.entries(factories.factoryResourcesGold[actualLevel + 1])) {
+        if (user.user.resources[key] < value) {
+          return false
+        }
+      }
+      return true
     case 'Diamond':
-      return (
-        user.user.resources.diamond >= factories.factoryResourcesDiamond[actualLevel + 1].diamond &&
-        user.user.money >= factories.factoryResourcesDiamond[actualLevel + 1].money
-      )
+      for (const [key, value] of Object.entries(factories.factoryResourcesDiamond[actualLevel + 1])) {
+        if (user.user.resources[key] < value) {
+          return false
+        }
+      }
+      return true
     default:
       return ''
   }
+}
+
+function errorUpgrade() {
+  Swal.fire({
+    icon: 'error',
+    title: 'Oops...',
+    text: 'You don\'t have enough resources',
+  })
+}
+
+function successUpgrade() {
+  Swal.fire({
+    icon: 'success',
+    title: 'Success',
+    text: 'You have successfully upgraded your factory',
+  })
 }
 </script>
 
@@ -287,9 +316,20 @@ function canUpgrade(type: string, actualLevel: number) {
                       <div class="grid grid-cols-2 gap-4">
                           <div v-for="resource in resourcesNeededForUpgrade(factoryData?.type, factoryData?.level)" :key="resource" class="flex flex-col items-center justify-center">
                               <p class="text-md font-bold m-3">
-                                  {{ resource.split(':')[1] }}
+                                <span
+                                  class="font-bold"
+                                  :class="
+                              actualResource(resource.split(':')[0]) <
+                              resource.split(':')[1]
+                                ? `text-red-700`
+                                : `text-green-700`
+                            "
+                                >
+                                  {{ actualResource(resource.split(':')[0]) }}
+                                </span>
+                                / {{ resource.split(':')[1] }}
                               </p>
-                              <img :src="resourceImage(resource.split(':')[0])" class="w-12 h-auto" />
+                              <img :src="resourceImage(resource.split(':')[0])" class="w-12 h-auto"  alt='resource'/>
                           </div>
                       </div>
                   </div>
@@ -313,7 +353,7 @@ function canUpgrade(type: string, actualLevel: number) {
                   :data-popover-target="
                     !canUpgrade(factoryData?.type, factoryData?.level) ? `popover-default` : ``
                   "
-                  @click="factories.upgradeFactory(factoryData?._id).then(() => closeModal())"
+                  @click="canUpgrade(factoryData?.type, factoryData?.level) ?   factories.upgradeFactory(factoryData?._id).then(() => closeModal(), successUpgrade()) : errorUpgrade()"
                   type="button"
                   class="w-full px-4 py-2 text-base font-medium text-center text-white transition duration-200 ease-in bg-green-700 rounded-lg shadow-md hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   :class="

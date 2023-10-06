@@ -19,6 +19,9 @@
                 <th scope="col" class="px-6 py-3">
                     Price
                 </th>
+                <th scope="col" class="px-6 py-3">
+                    Money Received
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -28,6 +31,7 @@
                 <td class="py-2 px-4">{{ transaction.resource }}</td>
                 <td class="py-2 px-4">{{ transaction.quantity }}</td>
                 <td class="py-2 px-4">{{ transaction.price }}</td>
+                <td class="py-2 px-4">{{ transaction.price - (3/100 * transaction.price) }}</td>
             </tr>
             </tbody>
         </table>

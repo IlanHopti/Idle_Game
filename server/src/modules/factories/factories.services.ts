@@ -81,7 +81,7 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
   if (!userResources) {
     return { error: userResources }
   }
-  const requiredLevelResources = requiredResources.resources[factory.level]
+  const requiredLevelResources = requiredResources.resources[factory.level + 1]
 
   for (const resourceType in requiredLevelResources) {
     const requiredAmount = requiredLevelResources[resourceType]
@@ -132,9 +132,10 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     }
 
     await Factory?.updateOne({ _id: new ObjectId(factory._id) }, { $set: newFactory })
+    console.log(requiredLevelResources.money);
     await Users?.updateOne({ _id: new ObjectId(user._id) }, {
       $set: {
-        money: user.money - factory.cost,
+        money: user.money - requiredLevelResources.money,
         resources: userResources
       }
     })

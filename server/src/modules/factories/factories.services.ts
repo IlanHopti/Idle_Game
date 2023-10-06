@@ -18,7 +18,7 @@ export async function getFactories (): Promise<Factories[] | unknown> {
 export async function getFactoriesByUser (user: string): Promise<Factories | unknown> {
   const factory: WithId<Factories>[] = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
   if (!factory) {
-    return { message: 'No factories found' }
+    return { error: 'No factories found' }
   }
   return factory
 }
@@ -35,7 +35,7 @@ export async function createFactory (user: string, type: string): Promise<unknow
   const factories: Array<WithId<Factories>> | null = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
   const fullUser: WithId<User> | null = await Users?.findOne({ _id: new ObjectId(user) })
   if (!factories) {
-    return { message: 'No factories found' }
+    return { error: 'No factories found' }
   } else {
     for (const quantity of [1, 5, 10]) {
       if (factories.length >= quantity) {
@@ -45,13 +45,13 @@ export async function createFactory (user: string, type: string): Promise<unknow
 
     await checkSuccess(fullUser, 'factory_1')
   }
-  return { message: 'Creation Successful' }
+  return { success: 'Creation Successful' }
 }
 
 export async function getFactoryResourcesByFactoryType (type: string): Promise<unknown> {
   const factoryResources = await FactoryRessources.findOne({ type })
   if (!factoryResources) {
-    return { message: 'No factory found' }
+    return { error: 'No factory found' }
   }
   return factoryResources
 }
@@ -59,7 +59,7 @@ export async function getFactoryResourcesByFactoryType (type: string): Promise<u
 export async function getFactoryAllResources(): Promise<unknown> {
   const factoryResources = await FactoryRessources.find().toArray()
   if (!factoryResources) {
-    return { message: 'No factory found' }
+    return { error: 'No factory found' }
   }
   return factoryResources
 }
@@ -72,14 +72,14 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     return { message: requiredResources }
   }
   if (factory.level === 10) {
-    return { message: 'Your factory is at max level' }
+    return { error: 'Your factory is at max level' }
   }
   if (factory.user_id.toString() !== user._id?.toString()) {
-    return { message: 'This is not your factory' }
+    return { error: 'This is not your factory' }
   }
   const userResources = user.resources
   if (!userResources) {
-    return { message: userResources }
+    return { error: userResources }
   }
   const requiredLevelResources = requiredResources.resources[factory.level]
 
@@ -90,13 +90,13 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
     if (resourceType !== 'money') {
       userResources[resourceType] -= requiredAmount
       if (userAmount < requiredAmount) {
-        return { message: `Insufficient ${resourceType} to upgrade the factory` }
+        return { error: `Insufficient ${resourceType} to upgrade the factory` }
       }
     }
   }
 
   if ((!user.money || user.money) && user.money < requiredResources.resources[factory.level].money) {
-    return { message: 'You do not have enough money to upgrade' }
+    return { error: 'You do not have enough money to upgrade' }
   }
 
   const newFactory = {
@@ -138,8 +138,8 @@ export async function upgradeFactory (factoryId: string, user: User): Promise<un
         resources: userResources
       }
     })
-    return { message: `You have upgraded successfully your factory to level ${factory.level + 1}` }
+    return { success: `You have upgraded successfully your factory to level ${factory.level + 1}` }
   }
 
-  return { message: 'An error has occurred' }
+  return { error: 'An error has occurred' }
 }

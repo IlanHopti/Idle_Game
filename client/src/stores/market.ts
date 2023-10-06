@@ -3,6 +3,7 @@ import axios from 'axios'
 import router from '@/router'
 import { ref } from 'vue'
 import type { MarketInterface, FastSell } from '@/types/market.interface'
+import Swal from "sweetalert2";
 
 interface MarketState {
   market: MarketInterface[]
@@ -29,18 +30,46 @@ export const useMarketStore = defineStore('market', {
       await axios
         .post('http://localhost:3001/market', { offer }, { withCredentials: true })
         .then((response) => {
-          console.log('response', response)
+          if (response.data.error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: response.data.error,
+            })
+          } else if (response.data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: response.data.success,
+            })
+          }
           this.fetchMarket(type, 'asc')
         })
         .catch((error) => {
-          console.log(error)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error?.toString(),
+          })
         })
     },
     async buyArticle(id: string, type: string) {
       await axios
         .put(`http://localhost:3001/market/confirm/${id}`, {}, { withCredentials: true })
         .then((response) => {
-          console.log('response', response.data.message)
+          if (response.data.error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: response.data.error,
+            })
+          } else if (response.data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: response.data.success,
+            })
+          }
           this.fetchMarket(type, 'asc')
         })
         .catch((error) => {
@@ -51,7 +80,19 @@ export const useMarketStore = defineStore('market', {
       await axios
         .put(`http://localhost:3001/market/cancel/${id}`, {}, { withCredentials: true })
         .then((response) => {
-          console.log('response', response.data.message)
+          if (response.data.error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: response.data.error,
+            })
+          } else if (response.data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: response.data.success,
+            })
+          }
           this.fetchMarket(type, 'asc')
         })
         .catch((error) => {
@@ -62,7 +103,19 @@ export const useMarketStore = defineStore('market', {
       await axios
         .post('http://localhost:3001/market/sell', { article }, { withCredentials: true })
         .then((response) => {
-          console.log('response', response.data.message)
+          if (response.data.error) {
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: response.data.error,
+            })
+          } else if (response.data.success) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Success',
+              text: response.data.success,
+            })
+          }
           this.fetchMarket(article.resource, 'asc')
         })
         .catch((error) => {

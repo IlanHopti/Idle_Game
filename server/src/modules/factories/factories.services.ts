@@ -33,6 +33,11 @@ export async function createFactory (user: string, type: string): Promise<unknow
   })
 
   const factories: Array<WithId<Factories>> | null = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
+  const typedFactories: Array<WithId<Factories>> | null = await Factory?.find({ user_id: new ObjectId(user), type }).toArray()
+
+  if (typedFactories?.length === 4) {
+    return { error: 'You cannot create more factories of this type' }
+  }
   const fullUser: WithId<User> | null = await Users?.findOne({ _id: new ObjectId(user) })
   if (!factories) {
     return { error: 'No factories found' }

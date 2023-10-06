@@ -210,7 +210,7 @@ const buyArticle = (item: MarketInterface) => {
   <!-- add sell toggle -->
   <MarketlaceAddSell :type="type" :sort="sort" :market="market" />
 
-  <MarketplaceFastSell/>
+  <MarketplaceFastSell />
 
   <!-- filters component -->
   <MarketplaceFilters

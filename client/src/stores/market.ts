@@ -58,7 +58,7 @@ export const useMarketStore = defineStore('market', {
           console.log(error)
         })
     },
-    async fastSell(article:FastSell){
+    async fastSell(article: FastSell) {
       await axios
         .post('http://localhost:3001/market/sell', { article }, { withCredentials: true })
         .then((response) => {

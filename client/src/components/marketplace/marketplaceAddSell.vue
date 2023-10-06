@@ -45,7 +45,7 @@ function addArticle() {
 }
 
 function calculateFee() {
-  return formData.value.price - (formData.value.price * 0.03)
+  return formData.value.price - formData.value.price * 0.03
 }
 </script>
 
@@ -137,9 +137,10 @@ function calculateFee() {
                 class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
                 required
               />
-                <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                    🚨 Warning: We will deduct 3% as a fee from the final price, resulting in {{ calculateFee() }} coins.
-                </div>
+              <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+                🚨 Warning: We will deduct 3% as a fee from the final price, resulting in
+                {{ calculateFee() }} coins.
+              </div>
             </div>
 
             <button

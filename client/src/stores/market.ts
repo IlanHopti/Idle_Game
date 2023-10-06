@@ -55,9 +55,9 @@ export const useMarketStore = defineStore('market', {
           })
         })
     },
-    async buyArticle(id: string, type: string) {
+    async buyArticle(id: string | undefined, quantity: number, type: string) {
       await axios
-        .put(`http://localhost:3001/market/confirm/${id}`, {}, { withCredentials: true })
+        .put(`http://localhost:3001/market/confirm/${id}`, { quantity }, { withCredentials: true })
         .then((response) => {
           if (response.data.error) {
             const audio = new Audio(BuyItem)

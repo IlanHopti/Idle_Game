@@ -84,7 +84,7 @@ export async function createOffer (offer: creationOffer): Promise<unknown> {
   return { error: 'Offer was not created, a problem has occured' }
 }
 
-export async function confirmOffer (offerId: string, buyerId: string): Promise<unknown> {
+export async function confirmOffer (offerId: string, buyerId: string, quantity: string): Promise<unknown> {
   const offer: WithId<Market> | null = await Markets.findOne({ _id: new ObjectId(offerId) })
   const buyer: WithId<User> | null = await Users.findOne({ _id: new ObjectId(buyerId) })
   if (!offer || !buyer) {
@@ -106,6 +106,9 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
   if (offer.status === 'Canceled') {
     return { error: 'You cannot buy an offer that has been canceled' }
   }
+  if (offer.quantity < parseInt(quantity)) {
+    return { error: 'You cannot buy more than the quantity of the offer' }
+  }
   const resourceType: string = offer.resource.toLowerCase()
   const buyerResource = buyer.resources
   if (!resourceType || !buyerResource) {
@@ -115,20 +118,37 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
     return { error: 'You do not have enough money to buy this offer' }
   }
 
-  buyerResource[resourceType] += offer.quantity
-  await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Confirmed' } })
+  const quantityRemaining: number = parseInt(quantity) && parseInt(quantity) > 0 ? offer.quantity - parseInt(quantity) : offer.quantity - offer.quantity
+  let multiplier: number = 0
+  let priceBought = offer.price
+  if (parseInt(quantity) && parseInt(quantity) > 0) {
+    multiplier = offer.price / offer.quantity
+    priceBought = Number((multiplier * parseInt(quantity)).toFixed(2))
+  }
+  buyerResource[resourceType] += parseInt(quantity) && parseInt(quantity) > 0 ? parseInt(quantity) : offer.quantity
+  if (quantityRemaining <= 0) {
+    await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Confirmed' } })
+  } else {
+    await Markets.updateOne({ _id: new ObjectId(offerId) }, {
+      $set: {
+        quantity: quantityRemaining,
+        price: multiplier * quantityRemaining
+      }
+    })
+  }
   await Transaction.insertOne({
     seller_id: new ObjectId(offer.seller_id),
     buyer_id: new ObjectId(buyerId),
-    net: offer.price - (offer.price * 3 / 100),
-    price: offer.price,
-    quantity: offer.quantity,
+    net: priceBought - (priceBought * 3 / 100),
+    price: priceBought,
+    quantity: quantity ? parseInt(quantity) : offer.quantity,
     resource: offer.resource,
     taxes: 3
   })
+
   await Users.updateOne({ _id: new ObjectId(buyerId) }, {
     $set: {
-      money: buyer.money - offer.price,
+      money: buyer.money - priceBought,
       resources: buyerResource
     }
   })

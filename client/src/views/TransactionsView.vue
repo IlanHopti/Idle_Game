@@ -34,6 +34,9 @@ let transactions = ref([])
 let userStore = useUserStore()
 
 onMounted(() => {
+    userStore.fetchUser().then(() => {
+        userStore.isLogged ? '' : router.push('/login')
+    })
   const unwatchTransactions = watch(
     () => userStore.transactions,
     (newValue) => {

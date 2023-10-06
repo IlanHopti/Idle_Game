@@ -29,25 +29,23 @@ const price: Record<string, number> = {
   diamond: 5
 }
 function addArticle() {
-    type.value = formData.value.type
-    const article = {
-        resource: formData.value.type,
-        quantity: formData.value.quantity,
-        seller_id: user.user._id.toString()
-    }
-    market.fastSell(article).then(()=> {
+  type.value = formData.value.type
+  const article = {
+    resource: formData.value.type,
+    quantity: formData.value.quantity,
+    seller_id: user.user._id.toString()
+  }
+  market.fastSell(article).then(() => {
     formData.value.type = 'Wood'
     formData.value.quantity = 0
-        const fastModal = document.querySelector(
-            '[data-modal-hide="fast-modal"]'
-            ) as HTMLElement
-            if (fastModal) {
-                fastModal.click()
-            }
-        })
+    const fastModal = document.querySelector('[data-modal-hide="fast-modal"]') as HTMLElement
+    if (fastModal) {
+      fastModal.click()
+    }
+  })
 }
 function calculateSum() {
-  if(!formData.value.quantity) return 0
+  if (!formData.value.quantity) return 0
   console.log(formData.value.type)
   console.log(price[formData.value.type])
   return (formData.value.quantity * price[formData.value.type.toLowerCase()]).toFixed(2)
@@ -126,9 +124,9 @@ function calculateSum() {
               />
             </div>
 
-              <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                 You'll receive {{ calculateSum() }} coins from this sell.
-              </div>
+            <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
+              You'll receive {{ calculateSum() }} coins from this sell.
+            </div>
 
             <button
               type="submit"

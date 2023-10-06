@@ -1,102 +1,107 @@
 <script setup lang="ts">
 import Swal from 'sweetalert2'
-import { ref, defineProps, watchEffect } from 'vue'
+import { ref, defineProps } from 'vue'
+import CoalResource from '../../public/resources/coal.png'
+import IronResource from '../../public/resources/iron_ingot.png'
+import WoodResource from '../../public/resources/wood.png'
+import StoneResource from '../../public/resources/stone.png'
+import CoinResource from '../../public/resources/coin.jpeg'
+import DiamondResource from '../../public/resources/diamond.png'
+import GoldResource from '../../public/resources/gold_ingot.png'
+import { useUserStore } from '@/stores/user'
+import { useFactoriesStore } from '@/stores/factories'
+const user = useUserStore()
+const factories = useFactoriesStore()
 
 const props = defineProps<{
   factoryName: string
+  factoryType: string
 }>()
 
-const myUnits = ref({ coin: 100, iron: 20 })
-const unitsNeededForBuy = ref({ coin: 100, iron: 50 })
-const canBuy = ref(false)
-
-const coinClass = ref('text-green-700')
-const ironClass = ref('text-green-700')
-
-watchEffect(() => {
-  if (myUnits.value.coin < unitsNeededForBuy.value.coin) {
-    coinClass.value = 'text-red-700'
-    canBuy.value = false
-  } else {
-    coinClass.value = 'text-green-700'
+function canBuy() {
+  let canBuy = true
+  factories.factoryResources.forEach((factoryResource) => {
+    if (factoryResource.type == props.factoryType) {
+      for (const key in factoryResource.resources[0]) {
+        if (factoryResource.resources[0][key] > user.resources[key]) {
+          canBuy = false
+        }
+      }
+    }
+  })
+  return canBuy
+}
+function image(key: string) {
+  switch (key) {
+    case 'wood':
+      return WoodResource
+    case 'stone':
+      return StoneResource
+    case 'coal':
+      return CoalResource
+    case 'iron':
+      return IronResource
+    case 'gold':
+      return GoldResource
+    case 'diamond':
+      return DiamondResource
+    case 'money':
+      return CoinResource
   }
+}
 
-  if (myUnits.value.iron < unitsNeededForBuy.value.iron) {
-    ironClass.value = 'text-red-700'
-    canBuy.value = false
-  } else {
-    ironClass.value = 'text-green-700'
+let unitsNeededForBuy = ref({})
+factories.factoryResources.forEach((factoryResource) => {
+  if (factoryResource.type == props.factoryType) {
+    unitsNeededForBuy.value = factoryResource.resources[0]
   }
 })
-
 const buyFactory = () => {
+  let contentHtml = `<div class="flex flex-row items-center justify-evenly mt-4 mb-4">`
+
+  for (const key in unitsNeededForBuy.value) {
+    if (unitsNeededForBuy.value[key] === 0) continue
+    const quantity = unitsNeededForBuy.value[key]
+    const resource = key === 'money' ? user.resources['coin'] : user.resources[key]
+    const isEnough = resource >= quantity
+    const resourceClass = isEnough ? 'text-green-700' : 'text-red-700'
+
+    console.log(quantity)
+    contentHtml += `
+    <div class="flex flex-col items-center justify-evenly">
+      <div class="flex flex-row items-center justify-evenly">
+        <div class="mr-6 w-fit">
+          <img class="w-16 h-auto" src="${image(key)}" />
+        </div>
+        <div class="flex flex-row items-center justify-between h-16">
+          <span class="font-bold ${resourceClass}">
+              ${resource}
+            </span>
+            / ${quantity}
+          </p>
+      </div>
+    </div>`
+  }
+
+  contentHtml += '</div>'
+
   Swal.fire({
     title: `Buy a ${props.factoryName} ?`,
-    html: `
-    <div class="flex flex-row items-center justify-evenly mt-4 mb-4">
-          <div class="flex flex-col items-center justify-evenly">
-            <div class="flex flex-row items-center justify-evenly">
-              <div class="mr-6 w-fit">
-                <img 
-                  class="w-16 h-auto"                   
-                  src="../../../public/resources/coin.jpeg"
-                />
-              </div>
-              <div class="flex flex-row items-center justify-between h-16">
-                <p>
-                  <span
-                    class="font-bold ${
-                      myUnits.value.coin < unitsNeededForBuy.value.coin
-                        ? `text-red-700`
-                        : `text-green-700`
-                    }"
-
-                  >
-                    ${myUnits.value.coin}
-                  </span>
-                  / ${unitsNeededForBuy.value.coin}
-                </p>
-              </div>
-            </div>
-            <div class="flex flex-row items-center justify-evenly">
-              <div class="mr-6 w-fit">
-                <img
-                  class="w-16 h-auto"
-                  src="../../../public/resources/iron_ingot.png"
-                />
-              </div>
-              <div class="flex flex-row items-center justify-between h-16">
-                <p>
-                  <span
-                    class="font-bold ${
-                      myUnits.value.iron < unitsNeededForBuy.value.iron
-                        ? `text-red-700`
-                        : `text-green-700`
-                    }"
-
-                  >
-                    ${myUnits.value.iron}
-                  </span>
-                  / ${unitsNeededForBuy.value.iron}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-    `,
+    html: contentHtml,
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Yes',
     cancelButtonText: 'No'
   }).then((result) => {
     if (result.isConfirmed) {
-      if (canBuy.value) {
+      if (canBuy()) {
         Swal.fire({
           title: 'Factory Bought!',
           text: 'You have successfully bought a factory!',
           icon: 'success',
           confirmButtonText: 'Ok'
         })
+        factories.createFactory(props.factoryType)
       } else {
         Swal.fire({
           title: 'Not enough resources!',
@@ -109,7 +114,6 @@ const buyFactory = () => {
   })
 }
 </script>
-
 <template>
   <main>
     <div

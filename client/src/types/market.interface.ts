@@ -8,8 +8,8 @@ export interface MarketInterface {
   _id?: string | undefined
 }
 
-export interface FastSell{
+export interface FastSell {
   quantity: number
-  resource:string
+  resource: string
   seller_id: string
 }

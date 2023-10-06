@@ -24,6 +24,7 @@ const factories = useFactoriesStore()
 const user = useUserStore()
 
 let factoryData: object | undefined = ref({})
+let factoryResources: object | undefined | unknown = ref({})
 
 const isShowModal = ref(false)
 function closeModal() {
@@ -46,6 +47,7 @@ onBeforeMount(() => {
   console.log('BeforeMount')
   factories.getFactoryAllResources().then(() => {
     console.log(factories.factoryResources)
+    factoryResources = factories.factoryResources
     console.log('rzjdbfosbdf')
     console.log(factories.factoryResourcesWood)
   })
@@ -167,6 +169,33 @@ function resourcesNeededForUpgrade(type: string, actualLevel: number) {
       return ''
   }
 }
+
+function resourcesNeededForUpgrade2(type: string, actualLevel: number) {
+  let resources = ref([])
+  switch (type) {
+    case 'Wood':
+      console.log('aaaaaaa')
+      // console.log(factories.factoryResourcesWood[actualLevel + 1])
+      for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
+        console.log(`${key}: ${value}`)
+        resources.value.push(`${key}: ${value}`)
+      }
+      return resources.value
+
+    case 'Stone':
+      return factories.factoryResourcesStone[actualLevel + 1].stone
+    case 'Coal':
+      return factories.factoryResourcesCoal[actualLevel + 1].coal
+    case 'Iron':
+      return factories.factoryResourcesIron[actualLevel + 1].iron
+    case 'Gold':
+      return factories.factoryResourcesGold[actualLevel + 1].gold
+    case 'Diamond':
+      return factories.factoryResourcesDiamond[actualLevel + 1].diamond
+    default:
+      return resources
+  }
+}
 function coinNeededForUpgrade(type: string, actualLevel: number) {
   switch (type) {
     case 'Wood':
@@ -232,28 +261,6 @@ function canUpgrade(type: string, actualLevel: number) {
           <div class="bg-white rounded-lg dark:bg-gray-700">
             <!-- Modal body -->
             <div class="p-6 space-y-6" style="padding-top: -10px">
-              <!-- Close button -->
-              <button
-                @click="closeModal"
-                type="button"
-                class="float-right text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-              >
-                <svg
-                  class="w-3 h-3"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 14 14"
-                >
-                  <path
-                    stroke="currentColor"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"
-                  />
-                </svg>
-              </button>
-
               <!-- Description Factory -->
               <div class="flex flex-row items-center justify-evenly">
                 <div class="mr-6 w-fit">
@@ -309,7 +316,8 @@ function canUpgrade(type: string, actualLevel: number) {
                           >
                             {{ actualResource(factoryData?.type) }}
                           </span>
-                          / {{ resourcesNeededForUpgrade(factoryData?.type, factoryData?.level) }}
+                          / {{ resourcesNeededForUpgrade(factoryData?.type, factoryData?.level) }} /
+                          {{ resourcesNeededForUpgrade2(factoryData?.type, factoryData?.level) }}
                         </p>
                       </div>
                     </div>
@@ -355,6 +363,7 @@ function canUpgrade(type: string, actualLevel: number) {
                   :data-popover-target="
                     !canUpgrade(factoryData?.type, factoryData?.level) ? `popover-default` : ``
                   "
+                  @click="factories.upgradeFactory(factoryData?._id).then(() => closeModal())"
                   type="button"
                   class="w-full px-4 py-2 text-base font-medium text-center text-white transition duration-200 ease-in bg-green-700 rounded-lg shadow-md hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   :class="
@@ -395,6 +404,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/wood_factory.png"
         factoryProductionImg="../../public/resources/wood.png"
         factory-type="Wood"
+        :factoryUpgrade="factoryResources"
         @showModal="showModal"
       />
       <!--        @click="showModal"-->
@@ -406,6 +416,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/coal_factory.jpeg"
         factoryProductionImg="../../public/resources/coal.png"
         factory-type="Coal"
+        :factoryUpgrade="factoryResources"
         @showModal="showModal"
       />
 
@@ -416,6 +427,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/stone_factory.jpeg"
         factoryProductionImg="../../public/resources/stone.png"
         factory-type="Stone"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
 
@@ -430,6 +442,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/iron_factory.png"
         factoryProductionImg="../../public/resources/iron_ingot.png"
         factory-type="Iron"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
 
@@ -440,6 +453,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/gold_factory.png"
         factoryProductionImg="../../public/resources/gold_ingot.png"
         factory-type="Gold"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
 
@@ -450,6 +464,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/diamond_factory.jpeg"
         factoryProductionImg="../../public/resources/diamond.png"
         factory-type="Diamond"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
     </div>

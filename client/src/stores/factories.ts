@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import type { FactoriesInterface, FactoryModalInterface } from '@/types/factories.interface'
+import AnvilSound from '../../public/factories/AnvilSound.mp4'
+import LevelUp from '../../public/factories/LevelUp.mp3'
 import axios from 'axios'
 import router from '@/router'
 
@@ -58,7 +60,6 @@ export const useFactoriesStore = defineStore('factories', {
       const result = await fetch(`http://localhost:3001/factory/resources/${type}`).then((res) =>
         res.json()
       )
-      console.log(result)
       return result
     },
     async getFactoryAllResources(): Promise<void> {
@@ -102,7 +103,10 @@ export const useFactoriesStore = defineStore('factories', {
       const result = await axios
         .put(`http://localhost:3001/factories/${factoryId}`, {}, { withCredentials: true })
         .then((res) => res.data)
-      console.log(result)
+      if (result.success) {
+        const audio = new Audio(LevelUp)
+        audio.play()
+      }
       await this.fetchFactory()
     },
     async createFactory(type: string): Promise<void> {
@@ -122,7 +126,10 @@ export const useFactoriesStore = defineStore('factories', {
           { withCredentials: true }
         )
         .then((res) => res.data)
-      console.log(result)
+      if (result.success) {
+        const audio = new Audio(AnvilSound)
+        audio.play()
+      }
       await this.fetchFactory()
     }
   }

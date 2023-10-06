@@ -180,6 +180,7 @@ const buyArticle = (item: MarketInterface | undefined) => {
             icon: 'success',
             confirmButtonText: 'Ok'
           })
+          closeModal()
         })
       }
     })
@@ -247,16 +248,12 @@ function calculateFee(totalQuantity: number, totalPrice: number) {
     </button>
   </div>
 
-  <Modal :size="xl" v-if="isShowModal" @close="closeModal">
+  <Modal v-if="isShowModal" @close="closeModal">
     <template #body>
       <p
         class="flex flex-row items-center justify-center text-base leading-relaxed text-gray-500 dark:text-gray-400"
       >
-        Are you sure you want to buy {{ modalQuantity }}
-        <img class="w-5 h-auto mr-1" :src="image(modalResource)" alt="wood" />
-        for {{ modalPrice.toFixed(2) }}
-        <img class="w-5 mr-1" :src="CoinResource" alt="" />
-        ?
+        How many {{ modalResource }} do you want to buy ?
       </p>
       <input
         v-model="quantity"
@@ -266,29 +263,31 @@ function calculateFee(totalQuantity: number, totalPrice: number) {
         placeholder="1"
         min="1"
         :max="modalQuantity"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
+        class="bg-gray-50 my-5 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white"
         required
       />
-      <div class="mt-2 text-sm text-gray-600 dark:text-gray-300">
-        🚨 Warning: We will deduct 3% as a fee from the final price, resulting in
-        {{ calculateFee(modalQuantity, modalPrice) }} coins.
+      <div
+        class="flex flex-row items-center justify-center text-center text-lg text-gray-600 dark:text-gray-300"
+      >
+        {{ calculateFee(modalQuantity, modalPrice) }}
+        <img class="w-10 mr-1" :src="CoinResource" alt="" />
       </div>
     </template>
     <template #footer>
-      <div class="flex justify-between">
+      <div class="flex justify-evenly">
         <button
           @click="closeModal"
           type="button"
-          class="text-gray-500 bg-white hover:bg-gray-100 focus:ring-4 focus:outline-none focus:ring-blue-300 rounded-lg border border-gray-200 text-sm font-medium px-5 py-2.5 hover:text-gray-900 focus:z-10 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-500 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-600"
+          class="text-red-700 hover:text-white border border-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-red-500 dark:text-red-500 dark:hover:text-white dark:hover:bg-red-600 dark:focus:ring-red-900"
         >
-          Decline
+          Cancel
         </button>
         <button
           @click="buyArticle(itemModal)"
           type="button"
-          class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          class="text-blue-700 hover:text-white border border-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center mr-2 mb-2 dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:hover:bg-blue-500 dark:focus:ring-blue-800"
         >
-          I accept
+          Buy
         </button>
       </div>
     </template>
@@ -296,7 +295,7 @@ function calculateFee(totalQuantity: number, totalPrice: number) {
   <!-- add sell toggle -->
   <MarketlaceAddSell :type="type" :sort="sort" :market="market" />
 
-  <MarketplaceFastSell />
+  <MarketplaceFastSell :type="type" :sort="sort" :market="market" />
 
   <!-- filters component -->
   <MarketplaceFilters
@@ -310,19 +309,7 @@ function calculateFee(totalQuantity: number, totalPrice: number) {
 
   <!-- marketplace -->
   <div class="grid grid-cols-4 gap-5">
-    <div
-      v-for="(item, index) in marketList"
-      @click="
-        showModal(
-          index,
-          item.quantity,
-          item.price,
-          item.resource.toLowerCase(),
-          <string>item?._id,
-          item
-        )
-      "
-    >
+    <div v-for="(item, index) in marketList">
       <div
         class="flex flex-col justify-center items-center border-2 border-solid rounded-lg w-32 pl-6 pr-6 m-auto"
         :class="`border-${item.resource.toLowerCase()}`"
@@ -332,7 +319,16 @@ function calculateFee(totalQuantity: number, totalPrice: number) {
 
         <button
           type="button"
-          @click="buyArticle(item)"
+          @click="
+            showModal(
+              index,
+              item.quantity,
+              item.price,
+              item.resource.toLowerCase(),
+              <string>item?._id,
+              item
+            )
+          "
           class="flex flex-row items-center text-sm border font-medium rounded-lg pl-5 pr-8 py-2.5 text-center my-2"
           :class="`border-${item.resource.toLowerCase()} `"
         >

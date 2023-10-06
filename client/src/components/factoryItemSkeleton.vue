@@ -51,11 +51,17 @@ function image(key: string) {
 }
 
 let unitsNeededForBuy = ref({})
-factories.factoryResources.forEach((factoryResource) => {
-  if (factoryResource.type == props.factoryType) {
-    unitsNeededForBuy.value = factoryResource.resources[0]
-  }
-})
+if (factories.factoryResources.length == 0) {
+  console.log('fetching resources')
+  factories.getFactoryAllResources().then(() => {
+    factories.factoryResources.forEach((factoryResource) => {
+      if (factoryResource.type == props.factoryType) {
+        unitsNeededForBuy.value = factoryResource.resources[0]
+        console.log('fetching resources')
+      }
+    })
+  })
+}
 const buyFactory = () => {
   let contentHtml = `<div class="flex flex-row items-center justify-evenly mt-4 mb-4">`
 

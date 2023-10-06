@@ -62,9 +62,7 @@ export async function redeemResources (user: any): Promise<void> {
     })
   })
 
-  if (new Date().getTime() - new Date(user.last_action).getTime() < 2000) {
-    return
-  }
+  // Now for each resources we add the amount to the user
   for (const resource in resourcesToGive) {
     const amount = resourcesToGive[resource]
     if (amount > 0) {

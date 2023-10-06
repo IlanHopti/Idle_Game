@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { useMarketStore } from '@/stores/market'
+import Swal from 'sweetalert2'
 
 const user = useUserStore()
 const market = useMarketStore()
@@ -28,6 +29,21 @@ function addArticle() {
     quantity: formData.value.quantity,
     price: formData.value.price,
     seller_id: user.user._id.toString()
+  }
+  if(article.quantity <= 0 || article.price <= 0){
+    // Create a swall
+    Swal.fire({
+      icon: 'error',
+      title: 'Oops...',
+      text: 'You must enter a valid quantity and price!',
+    })
+    const authenticationModal = document.querySelector(
+      '[data-modal-hide="authentication-modal"]'
+    ) as HTMLElement
+    if (authenticationModal) {
+      authenticationModal.click()
+    }
+    return
   }
 
   market.addArticle(article, formData.value.type, sort.value).then(() => {

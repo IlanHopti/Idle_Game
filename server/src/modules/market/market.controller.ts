@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from 'express'
-import { cancelOrder, confirmOffer, createOffer, getMarkets, getOneOffer, instantSell } from './market.services'
+import {cancelOrder, confirmOffer, createOffer, getMarkets, getOneOffer, instantSell} from './market.services'
 import { getUser } from '../user/user.services'
 import { type User } from '@/types/auth.types'
 import { type WithId } from 'mongodb'
@@ -48,7 +48,9 @@ export function marketRoutes (app: Express): void {
         res.status(401).json({ message: 'Unauthorized' })
         return
       }
-      const result = await confirmOffer(req.params.id, user._id.toString())
+
+      const quantity: string = req.body.quantity
+      const result = await confirmOffer(req.params.id, user._id.toString(), quantity)
       res.json(result)
     } catch (error) {
       res.status(500).json({ error })

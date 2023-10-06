@@ -28,7 +28,29 @@
 
 <script setup>
 import { useAchievementsStore } from '@/stores/achievements'
-import { onBeforeMount, ref } from 'vue'
+import {onBeforeMount, onErrorCaptured, onMounted, ref, watch} from 'vue'
+import router from "@/router";
+import {useUserStore} from "@/stores/user";
+
+onMounted(async () => {
+    const unwatchIsLogged = watch(
+        () => user.isLogged,
+        (newValue) => {
+            if (!newValue) {
+                router.push('/login')
+            }
+        }
+    )
+
+    onErrorCaptured(() => {
+        unwatchIsLogged()
+    })
+})
+
+const user = useUserStore()
+onBeforeMount(() => {
+    user.isLogged ? '' : router.push('/login')
+})
 
 let successes = ref([])
 let achievedSuccess = ref([])

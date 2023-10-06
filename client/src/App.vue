@@ -49,7 +49,6 @@ onMounted(() => {
   const unwatchIsLogged = watch(
     () => userConnected.isLogged,
     (newValue) => {
-      console.log(newValue)
       isLogged.value = newValue
     }
   )

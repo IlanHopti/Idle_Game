@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import FactoryColumn from '../components/factoriesColumn.vue'
 import { Modal } from 'flowbite-vue'
-import { onBeforeMount, ref } from 'vue'
+import {onBeforeMount, onErrorCaptured, onMounted, ref, watch} from 'vue'
 import { useFactoriesStore } from '@/stores/factories'
 import { useUserStore } from '@/stores/user'
 
@@ -19,12 +19,14 @@ import StoneFactory from '../../public/factories/stone_factory.jpeg'
 import DiamondFactory from '../../public/factories/diamond_factory.jpeg'
 import GoldFactory from '../../public/factories/gold_factory.png'
 import Coin from '../../public/resources/coin.jpeg'
+import router from "@/router";
 
 const factories = useFactoriesStore()
 const user = useUserStore()
 
 let factoryData: object | undefined = ref({})
 let factoryResources: object | undefined | unknown = ref({})
+let userStore = useUserStore()
 
 const isShowModal = ref(false)
 function closeModal() {
@@ -36,6 +38,27 @@ function showModal(id: string) {
   // console.log(factories.getFactory(id))
   isShowModal.value = true
 }
+
+onMounted(async () => {
+  const unwatchIsLogged = watch(
+    () => userStore.isLogged,
+    (newValue) => {
+      if (!newValue) {
+        router.push('/login')
+      }
+    }
+  )
+
+  onErrorCaptured(() => {
+    unwatchIsLogged()
+  })
+})
+
+onBeforeMount(() => {
+  userStore.isLogged ? factories.getFactoryAllResources().then(() => {
+    factoryResources = factories.factoryResources
+  }) : router.push('/login')
+})
 
 const handleClick = (e: Event) => {
   if (useUserStore().user.length !== 0) {

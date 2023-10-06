@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import {onBeforeMount, onErrorCaptured, onMounted, ref, watch} from 'vue'
 import Swal from 'sweetalert2'
 
 import CoalResource from '../../public/resources/coal.png'
@@ -17,6 +17,7 @@ import type { MarketInterface } from '@/types/market.interface'
 import MarketplaceFilters from '@/components/marketplace/marketplaceFilters.vue'
 import MarketlaceAddSell from '@/components/marketplace/marketplaceAddSell.vue'
 import MarketplaceFastSell from '@/components/marketplace/marketplaceFastSell.vue'
+import router from "@/router";
 
 const market = useMarketStore()
 const user = useUserStore()
@@ -25,6 +26,28 @@ let marketList = ref<MarketInterface[]>([])
 const type = ref('Wood')
 const sort = ref('asc')
 const owner = ref('Other')
+
+onMounted(async () => {
+  const unwatchIsLogged = watch(
+    () => user.isLogged,
+    (newValue) => {
+      if (!newValue) {
+        router.push('/login')
+      }
+    }
+  )
+
+  onErrorCaptured(() => {
+    unwatchIsLogged()
+  })
+})
+
+onBeforeMount(() => {
+  user.isLogged ? market.fetchMarket(type.value, sort.value).then(() => {
+    marketList.value = market.market
+    updateOwner(owner.value)
+  }) : router.push('/login')
+})
 
 function updateType(newType: string) {
   type.value = newType

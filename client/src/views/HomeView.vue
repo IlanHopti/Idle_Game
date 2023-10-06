@@ -210,6 +210,9 @@ function canUpgrade(type: string, actualLevel: number) {
   switch (type) {
     case 'Wood':
       for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
+        if(key === 'money' && user.user.money < value) {
+          return false
+        }
         if (user.user.resources[key] < value) {
           return false
         }
@@ -217,6 +220,9 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Stone':
       for (const [key, value] of Object.entries(factories.factoryResourcesStone[actualLevel + 1])) {
+        if(key === 'money' && user.user.money < value) {
+          return false
+        }
         if (user.user.resources[key] < value) {
           return false
         }
@@ -224,6 +230,9 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Coal':
       for (const [key, value] of Object.entries(factories.factoryResourcesCoal[actualLevel + 1])) {
+        if(key === 'money' && user.user.money < value) {
+          return false
+        }
         if (user.user.resources[key] < value) {
           return false
         }
@@ -231,6 +240,9 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Iron':
       for (const [key, value] of Object.entries(factories.factoryResourcesIron[actualLevel + 1])) {
+        if(key === 'money' && user.user.money < value) {
+          return false
+        }
         if (user.user.resources[key] < value) {
           return false
         }
@@ -238,6 +250,9 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Gold':
       for (const [key, value] of Object.entries(factories.factoryResourcesGold[actualLevel + 1])) {
+        if(key === 'money' && user.user.money < value) {
+          return false
+        }
         if (user.user.resources[key] < value) {
           return false
         }
@@ -245,7 +260,10 @@ function canUpgrade(type: string, actualLevel: number) {
       return true
     case 'Diamond':
       for (const [key, value] of Object.entries(factories.factoryResourcesDiamond[actualLevel + 1])) {
-        if (user.user.resources[key] < value) {
+        if(key === 'money' && user.user.money < value) {
+          return false
+        }
+        if (user.user.resources[key] < value ) {
           return false
         }
       }

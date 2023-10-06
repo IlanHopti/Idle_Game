@@ -42,6 +42,10 @@ const router = createRouter({
       path: '/transactions',
       name: 'transactions',
       component: () => TransactionsView
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: '/'
     }
   ]
 })

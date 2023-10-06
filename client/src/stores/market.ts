@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import SoldItem from '../../public/marker/SoldItem.mp3'
-import BuyItem from '../../public/marker/BuyingSound.mp3'
+import SoldItem from '../../public/market/SoldItem.mp3'
+import BuyItem from '../../public/market/BuyingSound.mp3'
 import type { MarketInterface, FastSell } from '@/types/market.interface'
 import Swal from 'sweetalert2'
 

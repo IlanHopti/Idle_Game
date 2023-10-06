@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import FactoryItem from '../components/factoryItem.vue'
 import FactoryItemSkeleton from '../components/factoryItemSkeleton.vue'
 import { useUserStore } from '@/stores/user'
@@ -20,15 +20,21 @@ let notOwnedFactories = ref(0)
 
 onMounted(() => {
   userConnected.fetchUser().then(() => {
-    factories.fetchFactory().then(() => {
-      factories.factories.forEach((factory) => {
-        if (factory.type == props.factoryType) {
-          notOwnedFactories.value++
-        }
-      })
-    })
+    factories.fetchFactory().then(() => {})
   })
 })
+
+watch(
+  () => factories?.factories,
+  (newValue) => {
+    notOwnedFactories.value = 0
+    newValue.forEach((factory) => {
+      if (factory.type == props.factoryType) {
+        notOwnedFactories.value++
+      }
+    })
+  }
+)
 
 const emit = defineEmits(['showModal'])
 

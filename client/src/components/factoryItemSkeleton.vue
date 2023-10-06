@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Swal from 'sweetalert2'
-import { ref, defineProps, watchEffect } from 'vue'
+import { ref, defineProps } from 'vue'
 import CoalResource from '../../public/resources/coal.png'
 import IronResource from '../../public/resources/iron_ingot.png'
 import WoodResource from '../../public/resources/wood.png'
@@ -18,8 +18,19 @@ const props = defineProps<{
   factoryType: string
 }>()
 
-const canBuy = ref(false)
-
+function canBuy() {
+  let canBuy = true
+  factories.factoryResources.forEach((factoryResource) => {
+    if (factoryResource.type == props.factoryType) {
+      for (const key in factoryResource.resources[0]) {
+        if (factoryResource.resources[0][key] > user.resources[key]) {
+          canBuy = false
+        }
+      }
+    }
+  })
+  return canBuy
+}
 function image(key: string) {
   switch (key) {
     case 'wood':
@@ -49,10 +60,11 @@ const buyFactory = () => {
   let contentHtml = `<div class="flex flex-row items-center justify-evenly mt-4 mb-4">`
 
   for (const key in unitsNeededForBuy.value) {
+    if (unitsNeededForBuy.value[key] === 0) continue
     const quantity = unitsNeededForBuy.value[key]
     const resource = key === 'money' ? user.resources['coin'] : user.resources[key]
     const isEnough = resource >= quantity
-    const resourceClass = isEnough ? "text-green-700" : "text-red-700";
+    const resourceClass = isEnough ? 'text-green-700' : 'text-red-700'
 
     console.log(quantity)
     contentHtml += `
@@ -82,13 +94,14 @@ const buyFactory = () => {
     cancelButtonText: 'No'
   }).then((result) => {
     if (result.isConfirmed) {
-      if (canBuy.value) {
+      if (canBuy()) {
         Swal.fire({
           title: 'Factory Bought!',
           text: 'You have successfully bought a factory!',
           icon: 'success',
           confirmButtonText: 'Ok'
         })
+        factories.createFactory(props.factoryType)
       } else {
         Swal.fire({
           title: 'Not enough resources!',

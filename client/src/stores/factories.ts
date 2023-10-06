@@ -45,7 +45,7 @@ export const useFactoriesStore = defineStore('factories', {
       const data = await axios
         .get(`http://localhost:3001/factories/user?token=${token}`)
         .then((res) => res.data)
-      console.log(data)
+      // console.log(data)
       this.factories = data
     },
     updateFactoryModal(infoModal: FactoryModalInterface[] | null) {
@@ -101,6 +101,26 @@ export const useFactoriesStore = defineStore('factories', {
       }
       const result = await axios
         .put(`http://localhost:3001/factories/${factoryId}`, {}, { withCredentials: true })
+        .then((res) => res.data)
+      console.log(result)
+      await this.fetchFactory()
+    },
+    async createFactory(type: string): Promise<void> {
+      const token: string | undefined = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        .split('=')[1]
+      if (!token) {
+        await router.push('/login')
+      }
+      const result = await axios
+        .post(
+          'http://localhost:3001/factories',
+          {
+            type
+          },
+          { withCredentials: true }
+        )
         .then((res) => res.data)
       console.log(result)
       await this.fetchFactory()

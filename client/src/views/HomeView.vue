@@ -190,11 +190,6 @@ function canUpgrade(type: string, actualLevel: number) {
     case 'Wood':
       for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
         if (user.user.resources[key] < value) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'You don\'t have enough resources',
-          })
           return false
         }
       }
@@ -209,11 +204,6 @@ function canUpgrade(type: string, actualLevel: number) {
     case 'Coal':
       for (const [key, value] of Object.entries(factories.factoryResourcesCoal[actualLevel + 1])) {
         if (user.user.resources[key] < value) {
-          Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: 'You don\'t have enough resources',
-          })
           return false
         }
       }

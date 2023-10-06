@@ -1,12 +1,11 @@
 import { type Express, type Request, type Response } from 'express'
-// import { UserConnected } from '@/types/user.types'
-import { getUser, redeemOfflineResources, redeemResources } from '@/modules/user/user.services'
+import { getUser, getUserById, redeemOfflineResources, redeemResources } from '@/modules/user/user.services'
 import { type WithId } from 'mongodb'
 import { type User } from '@/types/auth.types'
 
 export function userRoutes (app: Express): void {
   app.get('/user/:id', async (req: Request, res: Response): Promise<void> => {
-    const result = await getUser(req.params.id)
+    const result = await getUserById(req.params.id)
     res.json(result)
   })
   app.post('/user/redeem/resources', async (req, res): Promise<void> => {

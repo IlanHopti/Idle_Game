@@ -1,13 +1,12 @@
 import { defineStore } from 'pinia'
 import type { UserInterface } from '@/types/user.interface'
 import axios from 'axios'
-import router from '@/router'
-import { ref } from 'vue'
 interface UserState {
   user: UserInterface[]
   isLogged: boolean
   resources: any[]
   money: number
+  transactions: any[]
 }
 
 export const useUserStore = defineStore('user', {
@@ -15,7 +14,8 @@ export const useUserStore = defineStore('user', {
     user: [],
     isLogged: false,
     resources: [],
-    money: 0
+    money: 0,
+    transactions: []
   }),
   actions: {
     async fetchUser() {
@@ -106,6 +106,26 @@ export const useUserStore = defineStore('user', {
         this.user.resources.coin = this.user.money
       } catch (error) {
         console.error('Error during redeeming resources:')
+      }
+    },
+    async fetchAllTransactions() {
+      try {
+        const response = await axios.get('http://localhost:3001/transactions', {
+          withCredentials: true
+        })
+        this.transactions = response.data
+      } catch (error) {
+        console.error('Error during fetching transactions:', error)
+      }
+    },
+    async getUserById(id: string) {
+      try {
+        const response = await axios.get(`http://localhost:3001/user/${id}`, {
+          withCredentials: true
+        })
+        return response
+      } catch (error) {
+        console.error('Error during fetching user:', error)
       }
     }
   }

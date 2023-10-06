@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken'
 import { Users } from '@/db/models/User'
 import { Factory } from '@/db/models/Factories'
 import { checkSuccess } from '@/modules/success/success.services'
-import { type WithId } from 'mongodb'
+import {ObjectId, type WithId} from 'mongodb'
 import { type Factories } from '@/types/factories.types'
 import { type User } from '@/types/auth.types'
 
@@ -29,6 +29,12 @@ export async function getUser (token: string): Promise<Promise<WithId<User>> | n
     console.error(err)
     throw err
   }
+}
+
+export async function getUserById (id: string): Promise<WithId<User> | null> {
+  const userId = new ObjectId(id)
+  // @ts-ignore
+  return await Users.findOne({ _id: userId })
 }
 
 export async function redeemResources (user: any): Promise<void> {

@@ -51,15 +51,11 @@ function image(key: string) {
 }
 
 let unitsNeededForBuy = ref({})
-if (factories.factoryResources.length == 0) {
-  console.log('fetching resources')
-  factories.getFactoryAllResources().then(() => {
-    factories.factoryResources.forEach((factoryResource) => {
-      if (factoryResource.type == props.factoryType) {
-        unitsNeededForBuy.value = factoryResource.resources[0]
-        console.log('fetching resources')
-      }
-    })
+if (unitsNeededForBuy.value.length == undefined) {
+  factories.factoryResources.forEach((factoryResource) => {
+    if (factoryResource.type == props.factoryType) {
+      unitsNeededForBuy.value = factoryResource.resources[0]
+    }
   })
 }
 const buyFactory = () => {

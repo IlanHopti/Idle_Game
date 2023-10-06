@@ -11,6 +11,7 @@ const props = defineProps<{
   factoryImg: string
   factoryProductionImg: string
   factoryType: string
+  factoryUpgrade: unknown
 }>()
 
 const userConnected = useUserStore()
@@ -39,10 +40,10 @@ const openModal = (id: string) => {
 <template>
   <div class="flex flex-col">
     <div v-if="factories.factories.length == 0 || false" class="flex flex-col">
-      <FactoryItemSkeleton :factory-name="factoryName" />
-      <FactoryItemSkeleton :factory-name="factoryName" />
-      <FactoryItemSkeleton :factory-name="factoryName" />
-      <FactoryItemSkeleton :factory-name="factoryName" />
+      <FactoryItemSkeleton :factory-name="factoryName" :factoryType="props.factoryType" />
+      <FactoryItemSkeleton :factory-name="factoryName" :factoryType="props.factoryType" />
+      <FactoryItemSkeleton :factory-name="factoryName" :factoryType="props.factoryType" />
+      <FactoryItemSkeleton :factory-name="factoryName" :factoryType="props.factoryType" />
     </div>
     <div v-else class="flex flex-col">
       <div v-for="factory in factories?.factories">
@@ -57,7 +58,7 @@ const openModal = (id: string) => {
         </template>
       </div>
       <div v-for="n in 4 - notOwnedFactories">
-        <FactoryItemSkeleton :factory-name="factoryName" />
+        <FactoryItemSkeleton :factory-name="factoryName" :factoryType="props.factoryType" />
       </div>
     </div>
   </div>

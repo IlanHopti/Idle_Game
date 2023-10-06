@@ -33,7 +33,7 @@ export const useFactoriesStore = defineStore('factories', {
       console.log(data)
       this.factories = data
     },
-    async fetchFactory() {
+    async fetchFactory(): Promise<void> {
       // get token in cookie
       const token: string | undefined = document.cookie
         .split('; ')
@@ -90,6 +90,20 @@ export const useFactoriesStore = defineStore('factories', {
           this.factoryResourcesDiamond = element.resources
         }
       })
+    },
+    async upgradeFactory(factoryId: string): Promise<void> {
+      const token: string | undefined = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('token='))
+        .split('=')[1]
+      if (!token) {
+        await router.push('/login')
+      }
+      const result = await axios
+        .put(`http://localhost:3001/factories/${factoryId}`, {}, { withCredentials: true })
+        .then((res) => res.data)
+      console.log(result)
+      await this.fetchFactory()
     }
   }
 })

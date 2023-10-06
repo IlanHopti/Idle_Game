@@ -24,6 +24,7 @@ const factories = useFactoriesStore()
 const user = useUserStore()
 
 let factoryData: object | undefined = ref({})
+let factoryResources: object | undefined | unknown = ref({})
 
 const isShowModal = ref(false)
 function closeModal() {
@@ -46,6 +47,7 @@ onBeforeMount(() => {
   console.log('BeforeMount')
   factories.getFactoryAllResources().then(() => {
     console.log(factories.factoryResources)
+    factoryResources = factories.factoryResources
     console.log('rzjdbfosbdf')
     console.log(factories.factoryResourcesWood)
   })
@@ -165,6 +167,33 @@ function resourcesNeededForUpgrade(type: string, actualLevel: number) {
       return factories.factoryResourcesDiamond[actualLevel + 1].diamond
     default:
       return ''
+  }
+}
+
+function resourcesNeededForUpgrade2(type: string, actualLevel: number) {
+  let resources = ref([])
+  switch (type) {
+    case 'Wood':
+      console.log('aaaaaaa')
+      // console.log(factories.factoryResourcesWood[actualLevel + 1])
+      for (const [key, value] of Object.entries(factories.factoryResourcesWood[actualLevel + 1])) {
+        console.log(`${key}: ${value}`)
+        resources.value.push(`${key}: ${value}`)
+      }
+      return resources.value
+
+    case 'Stone':
+      return factories.factoryResourcesStone[actualLevel + 1].stone
+    case 'Coal':
+      return factories.factoryResourcesCoal[actualLevel + 1].coal
+    case 'Iron':
+      return factories.factoryResourcesIron[actualLevel + 1].iron
+    case 'Gold':
+      return factories.factoryResourcesGold[actualLevel + 1].gold
+    case 'Diamond':
+      return factories.factoryResourcesDiamond[actualLevel + 1].diamond
+    default:
+      return resources
   }
 }
 function coinNeededForUpgrade(type: string, actualLevel: number) {
@@ -309,7 +338,8 @@ function canUpgrade(type: string, actualLevel: number) {
                           >
                             {{ actualResource(factoryData?.type) }}
                           </span>
-                          / {{ resourcesNeededForUpgrade(factoryData?.type, factoryData?.level) }}
+                          / {{ resourcesNeededForUpgrade(factoryData?.type, factoryData?.level) }} /
+                          {{ resourcesNeededForUpgrade2(factoryData?.type, factoryData?.level) }}
                         </p>
                       </div>
                     </div>
@@ -355,6 +385,7 @@ function canUpgrade(type: string, actualLevel: number) {
                   :data-popover-target="
                     !canUpgrade(factoryData?.type, factoryData?.level) ? `popover-default` : ``
                   "
+                  @click="factories.upgradeFactory(factoryData?._id).then(() => closeModal())"
                   type="button"
                   class="w-full px-4 py-2 text-base font-medium text-center text-white transition duration-200 ease-in bg-green-700 rounded-lg shadow-md hover:bg-green-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                   :class="
@@ -395,6 +426,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/wood_factory.png"
         factoryProductionImg="../../public/resources/wood.png"
         factory-type="Wood"
+        :factoryUpgrade="factoryResources"
         @showModal="showModal"
       />
       <!--        @click="showModal"-->
@@ -406,6 +438,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/coal_factory.jpeg"
         factoryProductionImg="../../public/resources/coal.png"
         factory-type="Coal"
+        :factoryUpgrade="factoryResources"
         @showModal="showModal"
       />
 
@@ -416,6 +449,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/stone_factory.jpeg"
         factoryProductionImg="../../public/resources/stone.png"
         factory-type="Stone"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
 
@@ -430,6 +464,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/iron_factory.png"
         factoryProductionImg="../../public/resources/iron_ingot.png"
         factory-type="Iron"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
 
@@ -440,6 +475,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/gold_factory.png"
         factoryProductionImg="../../public/resources/gold_ingot.png"
         factory-type="Gold"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
 
@@ -450,6 +486,7 @@ function canUpgrade(type: string, actualLevel: number) {
         factoryImg="../../public/factories/diamond_factory.jpeg"
         factoryProductionImg="../../public/resources/diamond.png"
         factory-type="Diamond"
+        :factoryUpgrade="factories.factoryResources"
         @showModal="showModal"
       />
     </div>

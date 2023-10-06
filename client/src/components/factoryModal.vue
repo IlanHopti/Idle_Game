@@ -25,7 +25,7 @@ const props = defineProps<{
   borderColor: string
 }>()
 
-console.log(props.factoryName)
+// console.log(props.modalId)
 
 const myUnits = ref({ wood: 0, coal: 0, coin: 0, stone: 0, iron: 0, gold: 0, diamond: 0 })
 
@@ -75,7 +75,7 @@ watchEffect(() => {
         <button
           type="button"
           class="float-right text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ml-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white"
-          :data-modal-hide="modalId"
+          :data-modal-hide="props.modalId"
         >
           <svg
             class="w-3 h-3"

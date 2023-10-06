@@ -16,7 +16,7 @@ export async function getFactories (): Promise<Factories[] | unknown> {
 }
 
 export async function getFactoriesByUser (user: string): Promise<Factories | unknown> {
-  const factory: WithId<Factories> | null = await Factory?.findOne({ user_id: new ObjectId(user) })
+  const factory: WithId<Factories>[] = await Factory?.find({ user_id: new ObjectId(user) }).toArray()
   if (!factory) {
     return { message: 'No factories found' }
   }
@@ -46,6 +46,22 @@ export async function createFactory (user: string, type: string): Promise<unknow
     await checkSuccess(fullUser, 'factory_1')
   }
   return { message: 'Creation Successful' }
+}
+
+export async function getFactoryResourcesByFactoryType (type: string): Promise<unknown> {
+  const factoryResources = await FactoryRessources.findOne({ type })
+  if (!factoryResources) {
+    return { message: 'No factory found' }
+  }
+  return factoryResources
+}
+
+export async function getFactoryAllResources(): Promise<unknown> {
+  const factoryResources = await FactoryRessources.find().toArray()
+  if (!factoryResources) {
+    return { message: 'No factory found' }
+  }
+  return factoryResources
 }
 
 export async function upgradeFactory (factoryId: string, user: User): Promise<unknown> {

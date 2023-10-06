@@ -31,23 +31,34 @@ export async function getMarkets (sort: string, type: string | undefined = undef
 export async function getOneOffer (offerId: string): Promise<Market | unknown> {
   const offer: WithId<Market> | null = await Markets.findOne({ _id: new ObjectId(offerId) })
   if (!offer) {
-    return { message: 'No offers found' }
+    return { error: 'No offers found' }
   }
   return offer
 }
 
 export async function createOffer (offer: creationOffer): Promise<unknown> {
   if (offer.quantity <= 0 || !offer.quantity) {
-    return { message: 'Please select a quantity' }
+    return { error: 'Please select a quantity' }
   }
 
   if (offer.price <= 0 || !offer.price) {
-    return { message: 'Please select a price' }
+    return { error: 'Please select a price' }
   }
 
 
   if (offer.resource !== 'Wood' && offer.resource !== 'Coal' && offer.resource !== 'Stone' && offer.resource !== 'Iron' && offer.resource !== 'Gold' && offer.resource !== 'Diamond') {
-    return { message: 'Please select a valid resource' }
+    return { error: 'Please select a valid resource' }
+  }
+
+  // Check if the user has enough resources
+  const user: WithId<User> | null = await Users.findOne({ _id: new ObjectId(offer.seller_id) })
+  if (!user) {
+    return { error: 'User not found' }
+  }
+
+  // @ts-ignore
+  if (user.resources[offer.resource.toLowerCase()] < offer.quantity) {
+    return { error: 'You do not have enough resources' }
   }
 
   const offers: InsertOneResult<Market> = await Markets.insertOne({
@@ -67,39 +78,43 @@ export async function createOffer (offer: creationOffer): Promise<unknown> {
   })
 
   if (offers) {
-    return { message: 'Offer created successfully' }
+    return { success: 'Offer created successfully' }
   }
 
-  return { message: 'Offer was not created, a problem has occured' }
+  return { error: 'Offer was not created, a problem has occured' }
 }
 
 export async function confirmOffer (offerId: string, buyerId: string): Promise<unknown> {
   const offer: WithId<Market> | null = await Markets.findOne({ _id: new ObjectId(offerId) })
   const buyer: WithId<User> | null = await Users.findOne({ _id: new ObjectId(buyerId) })
   if (!offer || !buyer) {
-    return { message: 'Offer is not found' }
+    return { error: 'Offer is not found' }
   }
 
   if (offer.seller_id.toString() === buyerId) {
-    return { message: 'You cannot buy your own offer' }
+    return { error: 'You cannot buy your own offer' }
   }
   const seller: WithId<User> | null = await Users.findOne({ _id: new ObjectId(offer.seller_id) })
   if (!seller) {
-    return { message: 'Seller not found' }
+    return { error: 'Seller not found' }
   }
 
   if (offer.status === 'Confirmed') {
-    return { message: 'You cannot buy an already completed offer' }
+    return { error: 'You cannot buy an already completed offer' }
   }
 
   if (offer.status === 'Canceled') {
-    return { message: 'You cannot buy an offer that has been canceled' }
+    return { error: 'You cannot buy an offer that has been canceled' }
   }
   const resourceType: string = offer.resource.toLowerCase()
   const buyerResource = buyer.resources
   if (!resourceType || !buyerResource) {
-    return { message: 'An error has occurred' }
+    return { error: 'An error has occurred' }
   }
+  if (buyer.money < offer.price) {
+    return { error: 'You do not have enough money to buy this offer' }
+  }
+
   buyerResource[resourceType] += offer.quantity
   await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Confirmed' } })
   await Transaction.insertOne({
@@ -118,46 +133,46 @@ export async function confirmOffer (offerId: string, buyerId: string): Promise<u
     }
   })
 
-  return { message: 'You successfully bought the offer !' }
+  return { success: 'You successfully bought the offer !' }
 }
 
 export async function cancelOrder (offerId: string, userId: ObjectId): Promise<unknown> {
   const offer = await Markets.findOne({ _id: new ObjectId(offerId) })
   if (!offer || offer.seller_id.toString() !== userId.toString()) {
-    return { mesage: 'User is not authorised to cancel this order' }
+    return { error: 'User is not authorised to cancel this order' }
   }
 
   if (offer.status === 'Canceled') {
-    return { message: 'The offer is already canceled !' }
+    return { error: 'The offer is already canceled !' }
   } else if (offer.status === 'Confirmed') {
-    return { message: 'The offer is not available anymore !' }
+    return { error: 'The offer is not available anymore !' }
   }
 
   // Get back the resources that were in the offer
   const user: WithId<User> | null = await Users.findOne({ _id: new ObjectId(offer.seller_id) })
   if (!user) {
-    return { message: 'User not found' }
+    return { error: 'User not found' }
   }
 
   const resourceType: string = offer.resource.toLowerCase()
   const userResources = user.resources
   if (!resourceType || !userResources) {
-    return { message: 'An error has occurred' }
+    return { error: 'An error has occurred' }
   }
   userResources[resourceType] += offer.quantity
   await Users.updateOne({ _id: new ObjectId(offer.seller_id) }, { $set: { resources: userResources } })
 
   await Markets.updateOne({ _id: new ObjectId(offerId) }, { $set: { status: 'Canceled' } })
-  return { message: 'You successfully canceled the offer !' }
+  return { success: 'You successfully canceled the offer !' }
 }
 
 export async function instantSell (offer: fastSell, user: User): Promise<unknown> {
   if (!user) {
-    return { message: 'This user does not exist' }
+    return { error: 'This user does not exist' }
   }
   const userResources = user.resources
   if (!userResources) {
-    return { message: 'Please select a resource' }
+    return { error: 'Please select a resource' }
   }
   userResources[offer.resource.toLowerCase()] -= offer.quantity
   const price: Record<string, number> = {
@@ -168,8 +183,12 @@ export async function instantSell (offer: fastSell, user: User): Promise<unknown
     gold: 1,
     diamond: 5
   }
+  // Check if the user has enough resources
+  if (userResources[offer.resource.toLowerCase()] < offer.quantity) {
+    return { error: 'You do not have enough resources' }
+  }
 
   user.money += offer.quantity * price[offer.resource.toLowerCase()]
   await Users.updateOne({ _id: new ObjectId(offer.seller_id) }, { $set: { resources: userResources, money: user.money } })
-  return { message: 'Sell successfully' }
+  return { success: 'Sell successfully' }
 }
